@@ -15,8 +15,6 @@ public:
     virtual Return invoke(Args ...) = 0;
 };
 
-struct VOID{};
-
 template<typename Signature>
 class Action;
 
