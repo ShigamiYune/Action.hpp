@@ -247,9 +247,13 @@ class Lambda_Local<T, Return(Args ...)> : public ObjectCallback<Return(Args ...)
     return std::make_unique<Callback>(FUNC);                                                                            \
 }()
 
-#define GET_KEY_CALLBACK_LAMBDA_INLINE(FUNC) KeyCallback(nullptr, WIDEN(#FUNC))
+// Key for CALLBACK_LAMBDA_LOCAL
+#define GET_KEY_CALLBACK_CALLABLE(FUNC) KeyCallback(nullptr, WIDEN(#FUNC))
+// Key for CALLBACK_MEMBER
 #define GET_KEY_CALLBACK_MEMBER(CLASS, FUNC, PTR) KeyCallback(PTR, WIDEN(#FUNC))
-#define GET_KEY_CALLBACK_MEMBER_STATIC(CLASS, FUNC, CALL) KeyCallback(&CALL, WIDEN(#FUNC))
+// Key for CALLBACK_MEMBER_STATIC
+#define GET_KEY_CALLBACK_STATIC(CLASS, FUNC, CALL) KeyCallback(&CALL, WIDEN(#FUNC))
+// Key for CALLBACK_GLOBAL
 #define GET_KEY_CALLBACK_GLOBAL(FUNC, CALL) KeyCallback(\
     reinterpret_cast<const void*>(reinterpret_cast<uintptr_t>(&CALL)), WIDEN(#FUNC))
 #endif
