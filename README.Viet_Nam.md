@@ -38,7 +38,7 @@ Hệ thống `Action` dưới đây cho phép bạn đăng ký nhiều hàm call
 |----------------------|----------------------------|
 | Hàm thành viên       | 24 byte (16 heap + 8 trong Action) |
 | Hàm tĩnh/toàn cục    | 16 byte (8 heap + 8 trong Action)  |
-| Lambda (capture)     | 24 + kích thước lambda     |
+| Lambda (capture)     | 16 + kích thước lambda     |
 
 ---
 
