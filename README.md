@@ -5,19 +5,32 @@ The `Action` system below allows you to register multiple callbacks as delegates
 
 ---
 
-## 📦 Main components
+## Main components
 
 - `Action<Return(Args...)>`: Manages a list of events (delegate type).
 
 - `ObjectEvent<Return(Args...)>`: Abstract interface for callbacks.
 
-- `DEFINE_EVENT(...)`: Macro defines a callback adapter for a specific class.
+- `EVENT_*(...)`: Macro creates a callback instance from the current object.
 
-- `MAKE_EVENT(...)`: Macro creates a callback instance from the current object.
+- `GET_KEY_EVENT_*(...)`: Macro key of callback for compare.
 
 ---
 
-## 🛠 How to use
+## Features
+- C#-like delegate/event API
+- Support for lambdas, member functions, static, and global functions
+- Named handler lookup/removal using `KeyEvent`
+- Lightweight memory model
+
+## Usage Memory in 64-bit
+- 24 byte for member function (16 byte in heap, 8 byte in Action)
+- 16 byte for static or global function (8 byte in heap, 8 byte in Action)
+- with lambda. 24 - (16 + sizeof(lambda)) (8 byte in heap, 8 byte in Action, the rest is lambda)
+
+---
+
+## How to use 
 
 ### 1. Define class using events:
 
