@@ -95,7 +95,7 @@ int main() {
         std::cout << "lambda: " << x << " - " << y << " = " << result << std::endl;
         return result;
     };
-    action += CALLBACK_LAMBDA_CAPTURE(lambda, int, (int, int));
+    action += CALLBACK_LAMBDA_LOCAL(lambda, int, (int, int));
 
     std::cout << "-- Invoking all handlers --" << std::endl;
     int final_result = action.invoke(5, 3);
