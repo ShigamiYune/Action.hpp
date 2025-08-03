@@ -105,3 +105,6 @@ int main() {
     return 0;
 }
 ```
+
+---
+This entire tutorial was written by ChatGPT, so if there are any mistakes, please forgive me, I'm too lazy.
