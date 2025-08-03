@@ -122,6 +122,51 @@ public:
     }
 };
 
+template<typename ... Args>
+class Action<void(Args...)> {
+    std::vector<std::unique_ptr<ObjectEvent<void(Args ...)>>> event;
+public:
+    void add_event(std::unique_ptr<ObjectEvent<void(Args ...)>> _event){
+        event.push_back(std::move(_event));
+    }
+
+    void invoke(Args ... arg){
+        std::size_t size = event.size();
+        if(size == 0) return; 
+        size -= 1;
+        for(int i = 0; i < size; i++){
+            event[i]->invoke(arg...);
+        }
+        event[size]->invoke(arg...);
+    }
+
+    Action& operator+=(std::unique_ptr<ObjectEvent<void(Args ...)>> _event) {
+        event.push_back(std::move(_event));
+        return *this;
+    }
+
+    Action& operator-=(const KeyEvent& key) {
+        auto it = std::remove_if(event.begin(), event.end(),
+            [key](const std::unique_ptr<ObjectEvent<void(Args ...)>>& e) {
+                return e.get()->compare(key);
+            });
+
+        event.erase(it, event.end());
+        return *this;
+    }
+
+    std::size_t size() const { return event.size(); }
+    void clear() { event.clear(); }
+
+    void invoke_with_key(const KeyEvent& key, Args ... arg){
+        std::size_t size = event.size();
+        if(size == 0) return; 
+        for(int i = 0; i < size; i++){
+            if(event[i].get()->compare(key)) event[i].get()->invoke(arg ...);
+        }
+    }
+};
+
 template<typename T, typename Signature> class Lambda_Capture;
 template<typename T, typename Return, typename ... Args>
 class Lambda_Capture<T, Return(Args ...)> : public ObjectEvent<Return(Args ...)> {
@@ -148,7 +193,7 @@ class Lambda_Capture<T, Return(Args ...)> : public ObjectEvent<Return(Args ...)>
 }()
 
 #define EVENT_STATIC_MEMBER(CLASS, FUNC, CALL, RET, SIG)                                                                \
-[&CALL] () {                                                                                                            \
+[] () {                                                                                                                 \
     struct Event : ObjectEvent<RET(SIG)>{                                                                               \
         RET invoke(ACTION_GEN_PARAMS(ACTION_SIG_TO_PARAMS(SIG))) override {                                             \
              return CALL(ACTION_GEN_VAR(ACTION_SIG_TO_PARAMS(SIG)));                                                    \
@@ -161,13 +206,14 @@ class Lambda_Capture<T, Return(Args ...)> : public ObjectEvent<Return(Args ...)>
 }()
 
 #define EVENT_GLOBAL(FUNC, CALL, RET, SIG)                                                                              \
-[&CALL] () {                                                                                                            \
+[] () {                                                                                                                 \
     struct Event : ObjectEvent<RET(SIG)>{                                                                               \
         RET invoke(ACTION_GEN_PARAMS(ACTION_SIG_TO_PARAMS(SIG))) override {                                             \
              return CALL(ACTION_GEN_VAR(ACTION_SIG_TO_PARAMS(SIG)));                                                    \
         }                                                                                                               \
         bool compare(const KeyEvent& key) const override {                                                              \
-             return &CALL == key.ptr && wcscmp(key.name, WIDEN(#FUNC)) == 0;                                            \
+             return reinterpret_cast<const void*>(                                                                      \
+                reinterpret_cast<uintptr_t>(&CALL)) == key.ptr && wcscmp(key.name, WIDEN(#FUNC)) == 0;                  \
         }                                                                                                               \
     };                                                                                                                  \
     return std::make_unique<Event>();                                                                                   \
@@ -178,7 +224,7 @@ class Lambda_Capture<T, Return(Args ...)> : public ObjectEvent<Return(Args ...)>
     struct Event : Lambda_Capture<decltype(FUNC), RET(SIG)>{                                                            \
         Event(decltype(FUNC) _fn) : Lambda_Capture(_fn){}                                                               \
         RET invoke(ACTION_GEN_PARAMS(ACTION_SIG_TO_PARAMS(SIG))) override {                                             \
-             return fn(ACTION_GEN_VAR(ACTION_SIG_TO_PARAMS(SIG)));                                                    \
+             return fn(ACTION_GEN_VAR(ACTION_SIG_TO_PARAMS(SIG)));                                                      \
         }                                                                                                               \
         bool compare(const KeyEvent& key) const override {                                                              \
              return wcscmp(key.name, WIDEN(#FUNC)) == 0;                                                                \
@@ -190,5 +236,6 @@ class Lambda_Capture<T, Return(Args ...)> : public ObjectEvent<Return(Args ...)>
 #define GET_KEY_EVENT_LAMBDA_CAPTURE(FUNC) KeyEvent(nullptr, WIDEN(#FUNC))
 #define GET_KEY_EVENT_MEMBER(CLASS, FUNC, INSTANCE_PTR) KeyEvent(INSTANCE_PTR, WIDEN(#FUNC))
 #define GET_KEY_EVENT_MEMBER_STATIC(CLASS, FUNC, CALL) KeyEvent(&CALL, WIDEN(#FUNC))
-#define GET_KEY_EVENT_GLOBAL(FUNC, CALL) KeyEvent(&CALL, WIDEN(#FUNC))
+#define GET_KEY_EVENT_GLOBAL(FUNC, CALL) KeyEvent(\
+    reinterpret_cast<const void*>(reinterpret_cast<uintptr_t>(&CALL)), WIDEN(#FUNC))
 #endif
