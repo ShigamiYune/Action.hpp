@@ -1,50 +1,61 @@
 # Action.hpp
-# C++ Delegate/Event System — How to Use
+# Hệ thống Delegate/Event trong C++ — Hướng Dẫn Sử Dụng
 
-The `Action` system below allows you to register multiple callbacks as delegates similar to events in C#. Each `Action<Signature>` can contain multiple `ObjectEvent<Signature>`, and call them sequentially when `invoked`.
-
----
-
-## Main components
-
-- `Action<Return(Args...)>`: Manages a list of events (delegate type).
-
-- `ObjectEvent<Return(Args...)>`: Abstract interface for callbacks.
-
-- `EVENT_*(...)`: Macro creates a callback instance from the current object.
-
-- `GET_KEY_EVENT_*(...)`: Macro key of callback for compare.
+Hệ thống `Action` dưới đây cho phép bạn đăng ký nhiều hàm callback giống như delegate trong C#. Mỗi `Action<Signature>` có thể chứa nhiều `ObjectEvent<Signature>` và gọi chúng tuần tự khi được `invoke`.
 
 ---
 
-## Features
-- C#-like delegate/event API
-- Support for lambdas, member functions, static, and global functions
-- Named handler lookup/removal using `KeyEvent`
-- Lightweight memory model
+## Thành phần chính
 
-## Usage Memory in 64-bit
+- `Action<Return(Args...)>`: Quản lý danh sách các callback (kiểu delegate).
+
+- `ObjectEvent<Return(Args...)>`: Giao diện trừu tượng cho các callback.
+
+- `EVENT_*(...)`: Macro tạo callback từ các loại hàm khác nhau (thành viên, toàn cục, lambda...).
+
+- `GET_KEY_EVENT_*(...)`: Macro tạo khóa (key) để so sánh hoặc xóa callback.
+
+## Các biến trong Macro
+- CLASS : là class chứa callback bạn muốn đăng kí
+- FUNC : là tên callback mà bạn muốn đăng kí
+- PTR : là con trỏ của class (cái này chỉ có ở callback member)
+- CALL : là cách để gọi callback (cái này chỉ có ở callback static và global)
+- RET : là kiểu trả về của callback
+- SIG : là chữ ký của callback
+---
+
+## Tính năng
+- API delegate/event giống C#
+- Hỗ trợ lambda, hàm thành viên, hàm tĩnh và hàm toàn cục
+- Cho phép tra cứu hoặc xóa callback theo tên/khoá (`KeyEvent`)
+- Mô hình bộ nhớ nhẹ, đơn giản
+
+---
+
+## Bộ nhớ sử dụng trên hệ thống 64-bit
+
 | Loại Callback        | Bộ nhớ ước tính            |
 |----------------------|----------------------------|
 | Hàm thành viên       | 24 byte (16 heap + 8 trong Action) |
 | Hàm tĩnh/toàn cục    | 16 byte (8 heap + 8 trong Action)  |
 | Lambda (capture)     | 24 + kích thước lambda     |
+
 ---
 
-## How to use 
+## Cách sử dụng
 
-### 1. Define class using events:
+### 1. Định nghĩa class sử dụng `Action`:
 
 ```cpp
 #include "Action.hpp"
 
-// Global free function
+// Hàm toàn cục
 int global_add(int x, int y) {
     std::cout << "global_add: " << x << " + " << y << " = " << x + y << std::endl;
     return x + y;
 }
 
-// Static function
+// Hàm tĩnh
 struct Math {
     static int multiply(int x, int y) {
         std::cout << "Math::multiply: " << x << " * " << y << " = " << x * y << std::endl;
@@ -52,7 +63,7 @@ struct Math {
     }
 };
 
-// A sample class with member function to handle events
+// Một lớp mẫu sử dụng sự kiện
 class MyClass {
 public:
     int offset = 10;
@@ -64,21 +75,21 @@ public:
 };
 
 int main() {
-    // Define an Action taking two ints and returning int
-    Action<int(int,int)> action;
+    // Tạo Action nhận 2 int và trả về int
+    Action<int(int, int)> action;
 
     MyClass obj;
 
-    // 1. Global function handler
+    // 1. Đăng ký hàm toàn cục
     action += EVENT_GLOBAL(global_add, global_add, int, (int, int));
 
-    // 2. Static member function handler
+    // 2. Đăng ký hàm tĩnh
     action += EVENT_STATIC_MEMBER(Math, multiply, Math::multiply, int, (int, int));
 
-    // 3. Member function handler
+    // 3. Đăng ký hàm thành viên
     action += EVENT_MEMBER(MyClass, accumulate, &obj, int, (int, int));
 
-    // 4. Lambda handler capture
+    // 4. Đăng ký lambda có capture
     auto lambda = [](int x, int y) {
         int result = x - y;
         std::cout << "lambda: " << x << " - " << y << " = " << result << std::endl;
@@ -86,26 +97,24 @@ int main() {
     };
     action += EVENT_LAMBDA_CAPTURE(lambda, int, (int, int));
 
-    std::cout << "-- Invoking all handlers --" << std::endl;
+    std::cout << "-- Gọi tất cả callback đã đăng ký --" << std::endl;
     int final_result = action.invoke(5, 3);
-    std::cout << "Final (last) result: " << final_result << std::endl;
+    std::cout << "Kết quả cuối cùng: " << final_result << std::endl;
 
-    std::cout << "-- Invoke specific handler by key --" << std::endl;
-    // Invoke only the accumulate member function
+    std::cout << "-- Gọi hàm theo key cụ thể --" << std::endl;
     int acc_result = action.invoke_with_key(GET_KEY_EVENT_MEMBER(MyClass, accumulate, &obj), 2, 4);
-    std::cout << "Accumulate result: " << acc_result << std::endl;
+    std::cout << "Kết quả accumulate: " << acc_result << std::endl;
 
-    std::cout << "-- Removing global_add handler --" << std::endl;
+    std::cout << "-- Gỡ bỏ callback global_add --" << std::endl;
     action -= GET_KEY_EVENT_GLOBAL(global_add, global_add);
     action.invoke(7, 2);
 
-    std::cout << "-- Clearing all handlers --" << std::endl;
+    std::cout << "-- Xóa toàn bộ callback --" << std::endl;
     action.clear();
-    std::cout << "Handler count after clear: " << action.size() << std::endl;
+    std::cout << "Số callback còn lại: " << action.size() << std::endl;
 
     return 0;
 }
 ```
-
 ---
-This entire tutorial was written by ChatGPT, so if there are any mistakes, please forgive me, I'm too lazy.
+Toàn bộ hưỡng dẫn trên là do ChatGPT viết, nếu có gì sai sót thì mong bạn bỏ qua chú tôi lười viết quá.
