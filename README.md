@@ -24,34 +24,71 @@ The `Action` system below allows you to register multiple callbacks as delegates
 ```cpp
 #include "Action.hpp"
 
-class Myclass { 
-  Action<int(int, int)> test_1; 
-  Action<int(int, int)> test_2; 
-  
-  DEFINE_EVENT(test, Myclass) 
-  DEFINE_EVENT(test2, Myclass) 
-  
-  void init() { 
-    test_1 += MAKE_EVENT(test, Myclass, int(int, int)); 
-    test_2 += MAKE_EVENT(test2, Myclass, int(int, int)); 
-  } 
-  
-  int test(int i, int j) { 
-    return i; 
-  } 
+// Global free function
+int global_add(int x, int y) {
+    std::cout << "global_add: " << x << " + " << y << " = " << x + y << std::endl;
+    return x + y;
+}
 
-  int test2(int i, int j) { 
-    return j; 
-  }
+// Static function
+struct Math {
+    static int multiply(int x, int y) {
+        std::cout << "Math::multiply: " << x << " * " << y << " = " << x * y << std::endl;
+        return x * y;
+    }
 };
 
-int main(){
-  MyClass my_class;
-  my_class.init();
+// A sample class with member function to handle events
+class MyClass {
+public:
+    int offset = 10;
+    int accumulate(int x, int y) {
+        int result = x + y + offset;
+        std::cout << "MyClass::accumulate: (" << x << ", " << y << ") + offset " << offset << " = " << result << std::endl;
+        return result;
+    }
+};
 
-  my_class.test_1.invoke(0, 1);
-  my_class.test_2.invoke(1, 0);
+int main() {
+    // Define an Action taking two ints and returning int
+    Action<int(int,int)> action;
 
-  return 0;
+    MyClass obj;
+
+    // 1. Global function handler
+    action += EVENT_GLOBAL(global_add, global_add, int, (int, int));
+
+    // 2. Static member function handler
+    action += EVENT_STATIC_MEMBER(Math, multiply, Math::multiply, int, (int, int));
+
+    // 3. Member function handler
+    action += EVENT_MEMBER(MyClass, accumulate, &obj, int, (int, int));
+
+    // 4. Lambda handler capture
+    auto lambda = [](int x, int y) {
+        int result = x - y;
+        std::cout << "lambda: " << x << " - " << y << " = " << result << std::endl;
+        return result;
+    };
+    action += EVENT_LAMBDA_CAPTURE(lambda, int, (int, int));
+
+    std::cout << "-- Invoking all handlers --" << std::endl;
+    int final_result = action.invoke(5, 3);
+    std::cout << "Final (last) result: " << final_result << std::endl;
+
+    std::cout << "-- Invoke specific handler by key --" << std::endl;
+    // Invoke only the accumulate member function
+    int acc_result = action.invoke_with_key(GET_KEY_EVENT_MEMBER(MyClass, accumulate, &obj), 2, 4);
+    std::cout << "Accumulate result: " << acc_result << std::endl;
+
+    std::cout << "-- Removing global_add handler --" << std::endl;
+    action -= GET_KEY_EVENT_GLOBAL(global_add, global_add);
+    action.invoke(7, 2);
+
+    std::cout << "-- Clearing all handlers --" << std::endl;
+    action.clear();
+    std::cout << "Handler count after clear: " << action.size() << std::endl;
+
+    return 0;
 }
 ```
