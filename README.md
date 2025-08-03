@@ -15,6 +15,14 @@ The `Action` system below allows you to register multiple callbacks just like de
 
 - `GET_KEY_EVENT_*(...)` macros: Generate a unique key (pointer + name) for identifying or removing specific callbacks.
 
+## Macro Variables
+- CLASS : The class that owns the callback you want to register
+- FUNC : The name of the callback function to register
+- PTR : Pointer to the class instance (only used for member callbacks)
+- CALL : The function call expression (used for static and global callbacks)
+- RET : The return type of the callback
+- SIG : The function signature of the callback
+
 ---
 
 ## Features
