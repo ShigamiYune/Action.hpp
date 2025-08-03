@@ -167,73 +167,73 @@ public:
     }
 };
 
-template<typename T, typename Signature> class Lambda_Capture;
+template<typename T, typename Signature> class Lambda_Local;
 template<typename T, typename Return, typename ... Args>
-class Lambda_Capture<T, Return(Args ...)> : public ObjectCallback<Return(Args ...)> {
+class Lambda_Local<T, Return(Args ...)> : public ObjectCallback<Return(Args ...)> {
     public:
-    T fn; Lambda_Capture(T _fn) : fn(_fn) {}
+    T fn; Lambda_Local(T _fn) : fn(_fn) {}
     Return invoke(Args ... args) override { return fn(args ...);}
 };
 
 #define WIDEN2(x) L##x
 #define WIDEN(x) WIDEN2(x)
 
-#define CALLBACK_MEMBER(CLASS, FUNC, PTR, RET, SIG)                                                                        \
+#define CALLBACK_MEMBER(CLASS, FUNC, PTR, RET, SIG)                                                                     \
 [PTR] () {                                                                                                              \
-    struct CallBack : ObjectCallback<RET(SIG)>{                                                                               \
-        CLASS* ptr = nullptr; CallBack(CLASS* _ptr) : ptr(_ptr){}                                                          \
+    struct CallBack : ObjectCallback<RET(SIG)>{                                                                         \
+        CLASS* ptr = nullptr; CallBack(CLASS* _ptr) : ptr(_ptr){}                                                       \
         RET invoke(ACTION_GEN_PARAMS(ACTION_SIG_TO_PARAMS(SIG))) override {                                             \
              return ptr->FUNC(ACTION_GEN_VAR(ACTION_SIG_TO_PARAMS(SIG)));                                               \
         }                                                                                                               \
-        bool compare(const KeyCallback& key) const override {                                                              \
+        bool compare(const KeyCallback& key) const override {                                                           \
              return ptr == key.ptr && wcscmp(key.name, WIDEN(#FUNC)) == 0;                                              \
         }                                                                                                               \
     };                                                                                                                  \
-    return std::make_unique<CallBack>(PTR);                                                                                \
+    return std::make_unique<CallBack>(PTR);                                                                             \
 }()
 
-#define CALLBACK_STATIC_MEMBER(CLASS, FUNC, CALL, RET, SIG)                                                                \
+#define CALLBACK_STATIC_MEMBER(CLASS, FUNC, CALL, RET, SIG)                                                             \
 [] () {                                                                                                                 \
-    struct Callback : ObjectCallback<RET(SIG)>{                                                                               \
+    struct Callback : ObjectCallback<RET(SIG)>{                                                                         \
         RET invoke(ACTION_GEN_PARAMS(ACTION_SIG_TO_PARAMS(SIG))) override {                                             \
              return CALL(ACTION_GEN_VAR(ACTION_SIG_TO_PARAMS(SIG)));                                                    \
         }                                                                                                               \
-        bool compare(const KeyCallback& key) const override {                                                              \
+        bool compare(const KeyCallback& key) const override {                                                           \
              return &CALL == key.ptr && wcscmp(key.name, WIDEN(#FUNC)) == 0;                                            \
         }                                                                                                               \
     };                                                                                                                  \
-    return std::make_unique<Callback>();                                                                                   \
+    return std::make_unique<Callback>();                                                                                \
 }()
 
-#define CALLBACK_GLOBAL(FUNC, CALL, RET, SIG)                                                                              \
+#define CALLBACK_GLOBAL(FUNC, CALL, RET, SIG)                                                                           \
 [] () {                                                                                                                 \
-    struct Callback : ObjectCallback<RET(SIG)>{                                                                               \
+    struct Callback : ObjectCallback<RET(SIG)>{                                                                         \
         RET invoke(ACTION_GEN_PARAMS(ACTION_SIG_TO_PARAMS(SIG))) override {                                             \
              return CALL(ACTION_GEN_VAR(ACTION_SIG_TO_PARAMS(SIG)));                                                    \
         }                                                                                                               \
-        bool compare(const KeyCallback& key) const override {                                                              \
+        bool compare(const KeyCallback& key) const override {                                                           \
              return reinterpret_cast<const void*>(                                                                      \
                 reinterpret_cast<uintptr_t>(&CALL)) == key.ptr && wcscmp(key.name, WIDEN(#FUNC)) == 0;                  \
         }                                                                                                               \
     };                                                                                                                  \
-    return std::make_unique<Callback>();                                                                                   \
+    return std::make_unique<Callback>();                                                                                \
 }()
 
-#define CALLBACK_LAMBDA_CAPTURE(FUNC, RET, SIG)                                                                            \
+#define CALLBACK_LAMBDA_LOCAL(FUNC, RET, SIG)                                                                           \
 [FUNC] () {                                                                                                             \
-    struct Callback : Lambda_Capture<decltype(FUNC), RET(SIG)>{                                                            \
-        Callback(decltype(FUNC) _fn) : Lambda_Capture(_fn){}                                                               \
+    struct Callback : Lambda_Local<decltype(FUNC), RET(SIG)>{                                                           \
+        Callback(decltype(FUNC) _fn) : Lambda_Local(_fn){}                                                              \
         RET invoke(ACTION_GEN_PARAMS(ACTION_SIG_TO_PARAMS(SIG))) override {                                             \
              return fn(ACTION_GEN_VAR(ACTION_SIG_TO_PARAMS(SIG)));                                                      \
         }                                                                                                               \
-        bool compare(const KeyCallback& key) const override {                                                              \
+        bool compare(const KeyCallback& key) const override {                                                           \
              return wcscmp(key.name, WIDEN(#FUNC)) == 0;                                                                \
         }                                                                                                               \
     };                                                                                                                  \
-    return std::make_unique<Callback>(FUNC);                                                                               \
+    return std::make_unique<Callback>(FUNC);                                                                            \
 }()
 
-#define GET_KEY_CALLBACK_LAMBDA_CAPTURE(FUNC) KeyCallback(nullptr, WIDEN(#FUNC))
+#define GET_KEY_CALLBACK_LAMBDA_INLINE(FUNC) KeyCallback(nullptr, WIDEN(#FUNC))
 #define GET_KEY_CALLBACK_MEMBER(CLASS, FUNC, PTR) KeyCallback(PTR, WIDEN(#FUNC))
 #define GET_KEY_CALLBACK_MEMBER_STATIC(CLASS, FUNC, CALL) KeyCallback(&CALL, WIDEN(#FUNC))
 #define GET_KEY_CALLBACK_GLOBAL(FUNC, CALL) KeyCallback(\
