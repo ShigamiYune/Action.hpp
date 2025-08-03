@@ -32,7 +32,7 @@ The `Action` system below allows you to register multiple callbacks just like de
 |-----------------------|------------------------------------|
 | Member Function        | 24 bytes (16 heap + 8 in Action)   |
 | Static/Global Function | 16 bytes (8 heap + 8 in Action)    |
-| Lambda (with capture)  | 24 + size of lambda (aligned)      |
+| Lambda (with capture)  | 16 + size of lambda (aligned)      |
 
 ---
 
@@ -110,3 +110,4 @@ int main() {
     return 0;
 }
 ```
+All instructions above are written by ChatGPT, if there are any mistakes, please forgive me, I'm too lazy to write.
