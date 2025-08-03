@@ -3,7 +3,18 @@
 #define ACTION_H
 
 #pragma region ACTION_GEN
-#define ACTION_GEN_PARAMS_1(T1)   T1 a1
+
+#define ACTION_COUNT_ARGS_IMPL(_1, _0, N, ...) N
+#define ACTION_COUNT_ARGS(...) ACTION_COUNT_ARGS_IMPL(__VA_ARGS__, 1,0)
+
+#define ACTION_CAT_IMPL(a,b) a##b
+#define ACTION_CAT(a,b) ACTION_CAT_IMPL(a,b)
+
+#define ACTION_GEN_PARAMS__0()
+#define ACTION_GEN_PARAMS__1(T1) T1 a1
+
+#define ACTION_GEN_PARAMS_1(...) ACTION_CAT(ACTION_GEN_PARAMS__, ACTION_COUNT_ARGS(__VA_ARGS__))(__VA_ARGS__)
+
 #define ACTION_GEN_PARAMS_2(T1, T2)   T1 a1, T2 a2
 #define ACTION_GEN_PARAMS_3(T1, T2, T3)   T1 a1, T2 a2, T3 a3
 #define ACTION_GEN_PARAMS_4(T1, T2, T3, T4)   T1 a1, T2 a2, T3 a3, T4 a4
@@ -24,7 +35,10 @@
 #define ACTION_GEN_PARAMS_19(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19)   T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7, T8 a8, T9 a9, T10 a10, T11 a11, T12 a12, T13 a13, T14 a14, T15 a15, T16 a16, T17 a17, T18 a18, T19 a19
 #define ACTION_GEN_PARAMS_20(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20)   T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7, T8 a8, T9 a9, T10 a10, T11 a11, T12 a12, T13 a13, T14 a14, T15 a15, T16 a16, T17 a17, T18 a18, T19 a19, T20 a20
 
-#define ACTION_GEN_VAR_1(T1)   a1
+#define ACTION_GEN_VAR__0()
+#define ACTION_GEN_VAR__1(T1) a1
+
+#define ACTION_GEN_VAR_1(...) ACTION_CAT(ACTION_GEN_VAR__, ACTION_COUNT_ARGS(__VA_ARGS__))(__VA_ARGS__)
 #define ACTION_GEN_VAR_2(T1, T2)   a1, a2
 #define ACTION_GEN_VAR_3(T1, T2, T3)   a1, a2, a3
 #define ACTION_GEN_VAR_4(T1, T2, T3, T4)   a1, a2, a3, a4
