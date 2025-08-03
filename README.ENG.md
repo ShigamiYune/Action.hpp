@@ -22,7 +22,7 @@ The `Action` system below allows you to register multiple callbacks just like de
 - CALL : The function call expression (used for static and global callbacks)
 - RET : The return type of the callback
 - SIG : The function signature of the callback
-
+- BOUND_FUNC : A callable expression (lambda or std::bind) written inline and invoked when triggered (used in CALLBACK_INLINE)
 ---
 
 ## Features
