@@ -61,62 +61,62 @@
 #include <vector>
 #include <memory>
 
-struct KeyEvent{
+struct KeyCallback{
     const void* ptr;
     const wchar_t* name;
 };
 
-template<typename Signature> class ObjectEvent;
+template<typename Signature> class ObjectCallback;
 template<typename Return, typename ... Args>
-class ObjectEvent<Return(Args...)>{
+class ObjectCallback<Return(Args...)>{
 public:
-    virtual ~ObjectEvent(){}
+    virtual ~ObjectCallback(){}
     virtual Return invoke(Args ...) = 0;
-    virtual bool compare(const KeyEvent& key) const {return false;}
+    virtual bool compare(const KeyCallback& key) const {return false;}
 };
 
 template<typename Signature> class Action;
 template<typename Return, typename ... Args>
 class Action<Return(Args...)> {
-    std::vector<std::unique_ptr<ObjectEvent<Return(Args ...)>>> event;
+    std::vector<std::unique_ptr<ObjectCallback<Return(Args ...)>>> callback;
 public:
-    void add_event(std::unique_ptr<ObjectEvent<Return(Args ...)>> _event){
-        event.push_back(std::move(_event));
+    void add_callback(std::unique_ptr<ObjectCallback<Return(Args ...)>> _callback){
+        callback.push_back(std::move(_callback));
     }
 
     Return invoke(Args ... arg){
-        std::size_t size = event.size();
+        std::size_t size = callback.size();
         if(size == 0) return {}; 
         size -= 1;
         for(int i = 0; i < size; i++){
-            event[i]->invoke(arg...);
+            callback[i]->invoke(arg...);
         }
-        return event[size]->invoke(arg...);
+        return callback[size]->invoke(arg...);
     }
 
-    Action& operator+=(std::unique_ptr<ObjectEvent<Return(Args ...)>> _event) {
-        event.push_back(std::move(_event));
+    Action& operator+=(std::unique_ptr<ObjectCallback<Return(Args ...)>> _callback) {
+        callback.push_back(std::move(_callback));
         return *this;
     }
 
-    Action& operator-=(const KeyEvent& key) {
-        auto it = std::remove_if(event.begin(), event.end(),
-            [key](const std::unique_ptr<ObjectEvent<Return(Args ...)>>& e) {
+    Action& operator-=(const KeyCallback& key) {
+        auto it = std::remove_if(callback.begin(), callback.end(),
+            [key](const std::unique_ptr<ObjectCallback<Return(Args ...)>>& e) {
                 return e.get()->compare(key);
             });
 
-        event.erase(it, event.end());
+        callback.erase(it, callback.end());
         return *this;
     }
 
-    std::size_t size() const { return event.size(); }
-    void clear() { event.clear(); }
+    std::size_t size() const { return callback.size(); }
+    void clear() { callback.clear(); }
 
-    Return invoke_with_key(const KeyEvent& key, Args ... arg){
-        std::size_t size = event.size();
+    Return invoke_with_key(const KeyCallback& key, Args ... arg){
+        std::size_t size = callback.size();
         if(size == 0) return {}; 
         for(int i = 0; i < size; i++){
-            if(event[i].get()->compare(key)) return event[i].get()->invoke(arg ...);
+            if(callback[i].get()->compare(key)) return callback[i].get()->invoke(arg ...);
         }
         return {}; 
     }
@@ -124,52 +124,52 @@ public:
 
 template<typename ... Args>
 class Action<void(Args...)> {
-    std::vector<std::unique_ptr<ObjectEvent<void(Args ...)>>> event;
+    std::vector<std::unique_ptr<ObjectCallback<void(Args ...)>>> callback;
 public:
-    void add_event(std::unique_ptr<ObjectEvent<void(Args ...)>> _event){
-        event.push_back(std::move(_event));
+    void add_callback(std::unique_ptr<ObjectCallback<void(Args ...)>> _callback){
+        callback.push_back(std::move(_callback));
     }
 
     void invoke(Args ... arg){
-        std::size_t size = event.size();
+        std::size_t size = callback.size();
         if(size == 0) return; 
         size -= 1;
         for(int i = 0; i < size; i++){
-            event[i]->invoke(arg...);
+            callback[i]->invoke(arg...);
         }
-        event[size]->invoke(arg...);
+        callback[size]->invoke(arg...);
     }
 
-    Action& operator+=(std::unique_ptr<ObjectEvent<void(Args ...)>> _event) {
-        event.push_back(std::move(_event));
+    Action& operator+=(std::unique_ptr<ObjectCallback<void(Args ...)>> _callback) {
+        callback.push_back(std::move(_callback));
         return *this;
     }
 
-    Action& operator-=(const KeyEvent& key) {
-        auto it = std::remove_if(event.begin(), event.end(),
-            [key](const std::unique_ptr<ObjectEvent<void(Args ...)>>& e) {
+    Action& operator-=(const KeyCallback& key) {
+        auto it = std::remove_if(callback.begin(), callback.end(),
+            [key](const std::unique_ptr<ObjectCallback<void(Args ...)>>& e) {
                 return e.get()->compare(key);
             });
 
-        event.erase(it, event.end());
+        callback.erase(it, callback.end());
         return *this;
     }
 
-    std::size_t size() const { return event.size(); }
-    void clear() { event.clear(); }
+    std::size_t size() const { return callback.size(); }
+    void clear() { callback.clear(); }
 
-    void invoke_with_key(const KeyEvent& key, Args ... arg){
-        std::size_t size = event.size();
+    void invoke_with_key(const KeyCallback& key, Args ... arg){
+        std::size_t size = callback.size();
         if(size == 0) return; 
         for(int i = 0; i < size; i++){
-            if(event[i].get()->compare(key)) event[i].get()->invoke(arg ...);
+            if(callback[i].get()->compare(key)) callback[i].get()->invoke(arg ...);
         }
     }
 };
 
 template<typename T, typename Signature> class Lambda_Capture;
 template<typename T, typename Return, typename ... Args>
-class Lambda_Capture<T, Return(Args ...)> : public ObjectEvent<Return(Args ...)> {
+class Lambda_Capture<T, Return(Args ...)> : public ObjectCallback<Return(Args ...)> {
     public:
     T fn; Lambda_Capture(T _fn) : fn(_fn) {}
     Return invoke(Args ... args) override { return fn(args ...);}
@@ -178,64 +178,64 @@ class Lambda_Capture<T, Return(Args ...)> : public ObjectEvent<Return(Args ...)>
 #define WIDEN2(x) L##x
 #define WIDEN(x) WIDEN2(x)
 
-#define EVENT_MEMBER(CLASS, FUNC, PTR, RET, SIG)                                                                        \
+#define CALLBACK_MEMBER(CLASS, FUNC, PTR, RET, SIG)                                                                        \
 [PTR] () {                                                                                                              \
-    struct Event : ObjectEvent<RET(SIG)>{                                                                               \
-        CLASS* ptr = nullptr; Event(CLASS* _ptr) : ptr(_ptr){}                                                          \
+    struct CallBack : ObjectCallback<RET(SIG)>{                                                                               \
+        CLASS* ptr = nullptr; CallBack(CLASS* _ptr) : ptr(_ptr){}                                                          \
         RET invoke(ACTION_GEN_PARAMS(ACTION_SIG_TO_PARAMS(SIG))) override {                                             \
              return ptr->FUNC(ACTION_GEN_VAR(ACTION_SIG_TO_PARAMS(SIG)));                                               \
         }                                                                                                               \
-        bool compare(const KeyEvent& key) const override {                                                              \
+        bool compare(const KeyCallback& key) const override {                                                              \
              return ptr == key.ptr && wcscmp(key.name, WIDEN(#FUNC)) == 0;                                              \
         }                                                                                                               \
     };                                                                                                                  \
-    return std::make_unique<Event>(PTR);                                                                                \
+    return std::make_unique<CallBack>(PTR);                                                                                \
 }()
 
-#define EVENT_STATIC_MEMBER(CLASS, FUNC, CALL, RET, SIG)                                                                \
+#define CALLBACK_STATIC_MEMBER(CLASS, FUNC, CALL, RET, SIG)                                                                \
 [] () {                                                                                                                 \
-    struct Event : ObjectEvent<RET(SIG)>{                                                                               \
+    struct Callback : ObjectCallback<RET(SIG)>{                                                                               \
         RET invoke(ACTION_GEN_PARAMS(ACTION_SIG_TO_PARAMS(SIG))) override {                                             \
              return CALL(ACTION_GEN_VAR(ACTION_SIG_TO_PARAMS(SIG)));                                                    \
         }                                                                                                               \
-        bool compare(const KeyEvent& key) const override {                                                              \
+        bool compare(const KeyCallback& key) const override {                                                              \
              return &CALL == key.ptr && wcscmp(key.name, WIDEN(#FUNC)) == 0;                                            \
         }                                                                                                               \
     };                                                                                                                  \
-    return std::make_unique<Event>();                                                                                   \
+    return std::make_unique<Callback>();                                                                                   \
 }()
 
-#define EVENT_GLOBAL(FUNC, CALL, RET, SIG)                                                                              \
+#define CALLBACK_GLOBAL(FUNC, CALL, RET, SIG)                                                                              \
 [] () {                                                                                                                 \
-    struct Event : ObjectEvent<RET(SIG)>{                                                                               \
+    struct Callback : ObjectCallback<RET(SIG)>{                                                                               \
         RET invoke(ACTION_GEN_PARAMS(ACTION_SIG_TO_PARAMS(SIG))) override {                                             \
              return CALL(ACTION_GEN_VAR(ACTION_SIG_TO_PARAMS(SIG)));                                                    \
         }                                                                                                               \
-        bool compare(const KeyEvent& key) const override {                                                              \
+        bool compare(const KeyCallback& key) const override {                                                              \
              return reinterpret_cast<const void*>(                                                                      \
                 reinterpret_cast<uintptr_t>(&CALL)) == key.ptr && wcscmp(key.name, WIDEN(#FUNC)) == 0;                  \
         }                                                                                                               \
     };                                                                                                                  \
-    return std::make_unique<Event>();                                                                                   \
+    return std::make_unique<Callback>();                                                                                   \
 }()
 
-#define EVENT_LAMBDA_CAPTURE(FUNC, RET, SIG)                                                                            \
+#define CALLBACK_LAMBDA_CAPTURE(FUNC, RET, SIG)                                                                            \
 [FUNC] () {                                                                                                             \
-    struct Event : Lambda_Capture<decltype(FUNC), RET(SIG)>{                                                            \
-        Event(decltype(FUNC) _fn) : Lambda_Capture(_fn){}                                                               \
+    struct Callback : Lambda_Capture<decltype(FUNC), RET(SIG)>{                                                            \
+        Callback(decltype(FUNC) _fn) : Lambda_Capture(_fn){}                                                               \
         RET invoke(ACTION_GEN_PARAMS(ACTION_SIG_TO_PARAMS(SIG))) override {                                             \
              return fn(ACTION_GEN_VAR(ACTION_SIG_TO_PARAMS(SIG)));                                                      \
         }                                                                                                               \
-        bool compare(const KeyEvent& key) const override {                                                              \
+        bool compare(const KeyCallback& key) const override {                                                              \
              return wcscmp(key.name, WIDEN(#FUNC)) == 0;                                                                \
         }                                                                                                               \
     };                                                                                                                  \
-    return std::make_unique<Event>(FUNC);                                                                               \
+    return std::make_unique<Callback>(FUNC);                                                                               \
 }()
 
-#define GET_KEY_EVENT_LAMBDA_CAPTURE(FUNC) KeyEvent(nullptr, WIDEN(#FUNC))
-#define GET_KEY_EVENT_MEMBER(CLASS, FUNC, INSTANCE_PTR) KeyEvent(INSTANCE_PTR, WIDEN(#FUNC))
-#define GET_KEY_EVENT_MEMBER_STATIC(CLASS, FUNC, CALL) KeyEvent(&CALL, WIDEN(#FUNC))
-#define GET_KEY_EVENT_GLOBAL(FUNC, CALL) KeyEvent(\
+#define GET_KEY_CALLBACK_LAMBDA_CAPTURE(FUNC) KeyCallback(nullptr, WIDEN(#FUNC))
+#define GET_KEY_CALLBACK_MEMBER(CLASS, FUNC, PTR) KeyCallback(PTR, WIDEN(#FUNC))
+#define GET_KEY_CALLBACK_MEMBER_STATIC(CLASS, FUNC, CALL) KeyCallback(&CALL, WIDEN(#FUNC))
+#define GET_KEY_CALLBACK_GLOBAL(FUNC, CALL) KeyCallback(\
     reinterpret_cast<const void*>(reinterpret_cast<uintptr_t>(&CALL)), WIDEN(#FUNC))
 #endif
