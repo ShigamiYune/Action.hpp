@@ -7,7 +7,6 @@
  * This file is licensed under the MIT License.
  * You must include this notice in any redistribution.
  */
-
 #pragma once
 #ifndef ACTION_H
 #define ACTION_H
@@ -77,8 +76,8 @@
 #define ACTION_GEN_VAR(...) \
     ACTION_GET_MACRO(__VA_ARGS__, ACTION_GEN_VAR_20, ACTION_GEN_VAR_19, ACTION_GEN_VAR_18, ACTION_GEN_VAR_17, ACTION_GEN_VAR_16, ACTION_GEN_VAR_15, ACTION_GEN_VAR_14, ACTION_GEN_VAR_13, ACTION_GEN_VAR_12, ACTION_GEN_VAR_11, ACTION_GEN_VAR_10, ACTION_GEN_VAR_9, ACTION_GEN_VAR_8, ACTION_GEN_VAR_7, ACTION_GEN_VAR_6, ACTION_GEN_VAR_5, ACTION_GEN_VAR_4, ACTION_GEN_VAR_3, ACTION_GEN_VAR_2, ACTION_GEN_VAR_1)(__VA_ARGS__)
 
-#define ACTION_SIG_TO_PARAMS_I(...) __VA_ARGS__
-#define ACTION_SIG_TO_PARAMS(X) ACTION_SIG_TO_PARAMS_I X
+#define ACTION_UNWRAP_I(...) __VA_ARGS__
+#define ACTION_UNWRAP(X) ACTION_UNWRAP_I X
 
 #pragma endregion
 
@@ -108,7 +107,7 @@ public:
         callback.push_back(std::move(_callback));
     }
 
-    Return invoke(Args ... arg){
+    inline Return invoke(Args ... arg){
         std::size_t size = callback.size();
         if(size == 0) return {}; 
         size -= 1;
@@ -133,14 +132,15 @@ public:
         return *this;
     }
 
-    std::size_t size() const { return callback.size(); }
-    void clear() { callback.clear(); }
+    inline std::size_t size() const { return callback.size(); }
+    inline void clear() { callback.clear(); }
 
-    Return invoke_with_key(const KeyCallback& key, Args ... arg){
+    inline Return invoke_with_key(const KeyCallback& key, Args ... arg){
         std::size_t size = callback.size();
         if(size == 0) return {}; 
         for(int i = 0; i < size; i++){
-            if(callback[i].get()->compare(key)) return callback[i].get()->invoke(arg ...);
+            auto ptr = callback[i].get();
+            if(ptr->compare(key)) return ptr->invoke(arg ...);
         }
         return {}; 
     }
@@ -154,7 +154,7 @@ public:
         callback.push_back(std::move(_callback));
     }
 
-    void invoke(Args ... arg){
+    inline void invoke(Args ... arg){
         std::size_t size = callback.size();
         if(size == 0) return; 
         size -= 1;
@@ -179,14 +179,15 @@ public:
         return *this;
     }
 
-    std::size_t size() const { return callback.size(); }
-    void clear() { callback.clear(); }
+    inline std::size_t size() const { return callback.size(); }
+    inline void clear() { callback.clear(); }
 
-    void invoke_with_key(const KeyCallback& key, Args ... arg){
+    inline void invoke_with_key(const KeyCallback& key, Args ... arg){
         std::size_t size = callback.size();
         if(size == 0) return; 
         for(int i = 0; i < size; i++){
-            if(callback[i].get()->compare(key)) callback[i].get()->invoke(arg ...);
+            auto ptr = callback[i].get();
+            if(ptr->compare(key)) ptr->invoke(arg ...); return;
         }
     }
 };
@@ -202,12 +203,13 @@ class Lambda_Local<T, Return(Args ...)> : public ObjectCallback<Return(Args ...)
 #define WIDEN2(x) L##x
 #define WIDEN(x) WIDEN2(x)
 
+// Used for class member functions (non-static)
 #define CALLBACK_MEMBER(CLASS, FUNC, PTR, RET, SIG)                                                                     \
 [PTR] () {                                                                                                              \
     struct CallBack : ObjectCallback<RET(SIG)>{                                                                         \
         CLASS* ptr = nullptr; CallBack(CLASS* _ptr) : ptr(_ptr){}                                                       \
-        RET invoke(ACTION_GEN_PARAMS(ACTION_SIG_TO_PARAMS(SIG))) override {                                             \
-             return ptr->FUNC(ACTION_GEN_VAR(ACTION_SIG_TO_PARAMS(SIG)));                                               \
+        RET invoke(ACTION_GEN_PARAMS(ACTION_UNWRAP(SIG))) override {                                                    \
+             return ptr->FUNC(ACTION_GEN_VAR(ACTION_UNWRAP(SIG)));                                                      \
         }                                                                                                               \
         bool compare(const KeyCallback& key) const override {                                                           \
              return ptr == key.ptr && wcscmp(key.name, WIDEN(#FUNC)) == 0;                                              \
@@ -216,11 +218,12 @@ class Lambda_Local<T, Return(Args ...)> : public ObjectCallback<Return(Args ...)
     return std::make_unique<CallBack>(PTR);                                                                             \
 }()
 
+// Used for static member functions
 #define CALLBACK_STATIC_MEMBER(CLASS, FUNC, CALL, RET, SIG)                                                             \
 [] () {                                                                                                                 \
     struct Callback : ObjectCallback<RET(SIG)>{                                                                         \
-        RET invoke(ACTION_GEN_PARAMS(ACTION_SIG_TO_PARAMS(SIG))) override {                                             \
-             return CALL(ACTION_GEN_VAR(ACTION_SIG_TO_PARAMS(SIG)));                                                    \
+        RET invoke(ACTION_GEN_PARAMS(ACTION_UNWRAP(SIG))) override {                                                    \
+             return CALL(ACTION_GEN_VAR(ACTION_UNWRAP(SIG)));                                                           \
         }                                                                                                               \
         bool compare(const KeyCallback& key) const override {                                                           \
              return &CALL == key.ptr && wcscmp(key.name, WIDEN(#FUNC)) == 0;                                            \
@@ -229,11 +232,12 @@ class Lambda_Local<T, Return(Args ...)> : public ObjectCallback<Return(Args ...)
     return std::make_unique<Callback>();                                                                                \
 }()
 
+// Used for global or free functions (non-member)
 #define CALLBACK_GLOBAL(FUNC, CALL, RET, SIG)                                                                           \
 [] () {                                                                                                                 \
     struct Callback : ObjectCallback<RET(SIG)>{                                                                         \
-        RET invoke(ACTION_GEN_PARAMS(ACTION_SIG_TO_PARAMS(SIG))) override {                                             \
-             return CALL(ACTION_GEN_VAR(ACTION_SIG_TO_PARAMS(SIG)));                                                    \
+        RET invoke(ACTION_GEN_PARAMS(ACTION_UNWRAP(SIG))) override {                                                    \
+             return CALL(ACTION_GEN_VAR(ACTION_UNWRAP(SIG)));                                                           \
         }                                                                                                               \
         bool compare(const KeyCallback& key) const override {                                                           \
              return reinterpret_cast<const void*>(                                                                      \
@@ -243,12 +247,13 @@ class Lambda_Local<T, Return(Args ...)> : public ObjectCallback<Return(Args ...)
     return std::make_unique<Callback>();                                                                                \
 }()
 
+// Used for local lambdas, std::bind and std::function defined in the same function scope (with or without capture)
 #define CALLBACK_LAMBDA_LOCAL(FUNC, RET, SIG)                                                                           \
 [FUNC] () {                                                                                                             \
     struct Callback : Lambda_Local<decltype(FUNC), RET(SIG)>{                                                           \
         Callback(decltype(FUNC) _fn) : Lambda_Local(_fn){}                                                              \
-        RET invoke(ACTION_GEN_PARAMS(ACTION_SIG_TO_PARAMS(SIG))) override {                                             \
-             return fn(ACTION_GEN_VAR(ACTION_SIG_TO_PARAMS(SIG)));                                                      \
+        RET invoke(ACTION_GEN_PARAMS(ACTION_UNWRAP(SIG))) override {                                                    \
+             return fn(ACTION_GEN_VAR(ACTION_UNWRAP(SIG)));                                                             \
         }                                                                                                               \
         bool compare(const KeyCallback& key) const override {                                                           \
              return wcscmp(key.name, WIDEN(#FUNC)) == 0;                                                                \
@@ -257,8 +262,25 @@ class Lambda_Local<T, Return(Args ...)> : public ObjectCallback<Return(Args ...)
     return std::make_unique<Callback>(FUNC);                                                                            \
 }()
 
-// Key for CALLBACK_LAMBDA_LOCAL
-#define GET_KEY_CALLBACK_CALLABLE(FUNC) KeyCallback(nullptr, WIDEN(#FUNC))
+/// Used for inline lambdas or std::bind expressions declared directly inside the macro.
+/// FUNC is used as the key name, BOUND_FUNC is the callable (lambda or bind) expression.
+#define CALLBACK_INLINE(FUNC, CAPTURE, BOUND_FUNC, RET, SIG)                                                           \
+[ACTION_UNWRAP(CAPTURE)]() {                                                                                           \
+    auto FUNC = BOUND_FUNC;                                                                                            \
+    struct Callback : Lambda_Local<decltype(FUNC), RET(SIG)>{                                                          \
+        Callback(decltype(FUNC) _fn) : Lambda_Local(_fn){}                                                             \
+        RET invoke(ACTION_GEN_PARAMS(ACTION_UNWRAP(SIG))) override {                                                   \
+             return fn(ACTION_GEN_VAR(ACTION_UNWRAP(SIG)));                                                            \
+        }                                                                                                              \
+        bool compare(const KeyCallback& key) const override {                                                          \
+             return wcscmp(key.name, WIDEN(#FUNC)) == 0;                                                               \
+        }                                                                                                              \
+    };                                                                                                                 \
+    return std::make_unique<Callback>(std::move(FUNC));                                                                \
+}()
+
+// Key for CALLBACK_INLINE and CALLBACK_LAMBDA_LOCAL
+#define GET_KEY_CALLBACK_INLINE(FUNC) KeyCallback(nullptr, WIDEN(#FUNC))
 // Key for CALLBACK_MEMBER
 #define GET_KEY_CALLBACK_MEMBER(CLASS, FUNC, PTR) KeyCallback(PTR, WIDEN(#FUNC))
 // Key for CALLBACK_MEMBER_STATIC
