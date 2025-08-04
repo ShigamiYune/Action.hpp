@@ -1,3 +1,13 @@
+/*
+ * Project Name: Action.hpp
+ * Author: ShigamiYune
+ * Copyright (c) 2025 ShigamiYune
+ * License: MIT
+ *
+ * This file is licensed under the MIT License.
+ * You must include this notice in any redistribution.
+ */
+
 #pragma once
 #ifndef ACTION_H
 #define ACTION_H
