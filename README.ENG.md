@@ -6,6 +6,10 @@
 
 ---
 
+## Required : C++ 11
+
+---
+
 ## Memory Usage on 64-bit Systems
 
 | Callback Type          | Estimated Memory Usage                                   |
@@ -140,9 +144,3 @@ int main() {
 | operator-= / key   |
 +-------------------+
 ```
-
----
-
-Mình có thể làm thêm **version GitHub-ready với folder `examples/` và `tests/`** nếu bạn muốn, để cộng đồng có thể clone và chạy ngay.
-
-Bạn có muốn mình làm luôn không?
