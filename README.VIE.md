@@ -75,4 +75,3 @@ int main() {
     return 0;
 }
 ```
-Toàn bộ hưỡng dẫn trên là do ChatGPT viết, nếu có gì sai sót thì mong bạn bỏ qua chú tôi lười viết quá.
