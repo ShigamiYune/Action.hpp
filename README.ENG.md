@@ -72,7 +72,7 @@ int main() {
 
     // Add callback with return
     auto global_return = [](int x){ std::cout << "Return: " << x << "\n"; return x*2; };
-    onEventReturn += action::make_callback<global_return>();
+    onEventReturn += action::make_callback<24>(global_return);
 
     // Invoke all callbacks
     std::cout << "Invoke all callbacks:\n";
