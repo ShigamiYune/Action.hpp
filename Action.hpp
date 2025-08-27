@@ -16,47 +16,6 @@
 #include <typeindex>
 
 namespace action{
-    class key_callback_member {
-    public:
-        std::uintptr_t ptr;
-        std::type_index func_type;
-
-        key_callback_member(std::uintptr_t obj_ptr, std::type_index type)
-            : ptr(obj_ptr), func_type(type) {}
-    };
-
-    template<typename FUNC_T>
-    struct d_key_callback_member : key_callback_member {
-        FUNC_T func_ptr;
-
-        d_key_callback_member(std::uintptr_t obj_ptr, FUNC_T fptr)
-            : key_callback_member(obj_ptr, std::type_index(typeid(FUNC_T))),
-            func_ptr(fptr) {}
-    };
-
-    template<typename SIGNATURE> struct key_callback_global;
-    template<typename RETURN, typename... ARGS>
-    struct key_callback_global<RETURN(ARGS...)> {
-        RETURN(*ptr)(ARGS...);
-        key_callback_global(RETURN(*func)(ARGS...)) : ptr(func) {}
-    };
-
-    struct key_callback_lambda { 
-        std::uintptr_t key;
-        key_callback_lambda(std::uintptr_t _key) : key(_key) {}
-    };
-
-    template<typename SIGNATURE> class object_callback;
-    template<typename RETURN, typename ... ARGS>
-    class object_callback<RETURN(ARGS...)>{
-    public:
-        virtual ~object_callback(){}
-        virtual RETURN invoke(ARGS ...) = 0;
-        virtual bool compare(const key_callback_member*) = 0;
-        virtual bool compare(const key_callback_global<RETURN(ARGS...)>&) = 0;
-        virtual bool compare(const key_callback_lambda&) = 0;
-    };
-
     namespace check {
         template <typename T>
         struct check_function {
@@ -185,6 +144,47 @@ namespace action{
     }
 
     namespace callback {
+        class key_callback_member {
+        public:
+            std::uintptr_t ptr;
+            std::type_index func_type;
+
+            key_callback_member(std::uintptr_t obj_ptr, std::type_index type)
+                : ptr(obj_ptr), func_type(type) {}
+        };
+
+        template<typename FUNC_T>
+        struct d_key_callback_member : key_callback_member {
+            FUNC_T func_ptr;
+
+            d_key_callback_member(std::uintptr_t obj_ptr, FUNC_T fptr)
+                : key_callback_member(obj_ptr, std::type_index(typeid(FUNC_T))),
+                func_ptr(fptr) {}
+        };
+
+        template<typename SIGNATURE> struct key_callback_global;
+        template<typename RETURN, typename... ARGS>
+        struct key_callback_global<RETURN(ARGS...)> {
+            RETURN(*ptr)(ARGS...);
+            key_callback_global(RETURN(*func)(ARGS...)) : ptr(func) {}
+        };
+
+        struct key_callback_lambda { 
+            std::uintptr_t key;
+            key_callback_lambda(std::uintptr_t _key) : key(_key) {}
+        };
+
+        template<typename SIGNATURE> class object_callback;
+        template<typename RETURN, typename ... ARGS>
+        class object_callback<RETURN(ARGS...)>{
+        public:
+            virtual ~object_callback(){}
+            virtual RETURN invoke(ARGS ...) = 0;
+            virtual bool compare(const key_callback_member*) = 0;
+            virtual bool compare(const key_callback_global<RETURN(ARGS...)>&) = 0;
+            virtual bool compare(const key_callback_lambda&) = 0;
+        };
+
         template<auto FUNC, typename SIGNATURE, 
             unsigned char type = ::action::check::check_function<decltype(FUNC)>::type>
         struct callback;
@@ -311,7 +311,7 @@ namespace action{
     template<std::uintptr_t key, typename FUNC>
     auto make_callback(FUNC f) {
         using sig = typename unpack::lambda_unpack<FUNC>::signature;
-        using cb_t = ::action::callback::lambda_callback<FUNC, sig, key>;
+        using cb_t = callback::lambda_callback<FUNC, sig, key>;
         return std::make_unique<cb_t>(std::move(f));
     }
 
@@ -319,7 +319,7 @@ namespace action{
     template <auto FUNC,
         typename = std::enable_if_t<check::check_function<decltype(FUNC)>::type == 0>>
     auto get_key_callback(typename unpack::unpack<decltype(FUNC)>::class_type* object) {
-        return d_key_callback_member<decltype(FUNC)>(
+        return callback::d_key_callback_member<decltype(FUNC)>(
             reinterpret_cast<std::uintptr_t>(object),
             FUNC
         );
@@ -328,7 +328,7 @@ namespace action{
     template <auto FUNC,
         typename = std::enable_if_t<check::check_function<decltype(FUNC)>::type == 0>>
     auto get_key_callback(const typename unpack::unpack<decltype(FUNC)>::class_type* object) {
-        return d_key_callback_member<decltype(FUNC)>(
+        return callback::d_key_callback_member<decltype(FUNC)>(
             reinterpret_cast<std::uintptr_t>(object),
             FUNC
         );
@@ -338,19 +338,19 @@ namespace action{
         typename = std::enable_if_t<check::check_function<decltype(FUNC)>::type == 1>>
     auto get_key_callback() {
         using sig = typename unpack::unpack<decltype(FUNC)>::signature;
-        return key_callback_global<sig>(FUNC);
+        return callback::key_callback_global<sig>(FUNC);
     }
 
     template <std::uintptr_t KEY>
     auto get_key_callback() {
-        return key_callback_lambda(KEY);
+        return callback::key_callback_lambda(KEY);
     }
 
     template<typename SIGNATURE> class action;
     template<typename RETURN, typename... ARGS> 
     class action<RETURN(ARGS...)> {
     public:
-        using object_type = std::unique_ptr<object_callback<RETURN(ARGS...)>>;
+        using object_type = std::unique_ptr<callback::object_callback<RETURN(ARGS...)>>;
 
         std::vector<object_type> callbacks;
 
@@ -359,7 +359,7 @@ namespace action{
             return this;
         }
         template<typename FUNC>
-        action* operator-=(d_key_callback_member<FUNC> key) { 
+        action* operator-=(callback::d_key_callback_member<FUNC> key) { 
             for (std::size_t i = 0; i < callbacks.size(); ++i) {
                 if(callbacks[i]->compare(&key)) {
                     callbacks.erase(callbacks.begin() + i);
@@ -368,7 +368,7 @@ namespace action{
             }
             return this;
         }
-        action* operator-=(const key_callback_global<RETURN(ARGS...)>& key) { 
+        action* operator-=(const callback::key_callback_global<RETURN(ARGS...)>& key) { 
             for (std::size_t i = 0; i < callbacks.size(); ++i) {
                 if(callbacks[i]->compare(key)) {
                     callbacks.erase(callbacks.begin() + i);
@@ -377,7 +377,7 @@ namespace action{
             }
             return this;
         }
-        action* operator-=(const key_callback_lambda& key) { 
+        action* operator-=(const callback::key_callback_lambda& key) { 
             for (std::size_t i = 0; i < callbacks.size(); ++i) {
                 if(callbacks[i]->compare(key)) {
                     callbacks.erase(callbacks.begin() + i);
@@ -401,7 +401,7 @@ namespace action{
     template<typename... ARGS> 
     class action<void(ARGS...)> {
     public:
-        using object_type = std::unique_ptr<object_callback<void(ARGS...)>>;
+        using object_type = std::unique_ptr<callback::object_callback<void(ARGS...)>>;
 
         std::vector<object_type> callbacks;
 
@@ -410,7 +410,7 @@ namespace action{
             return this;
         }
         template<typename FUNC>
-        action* operator-=(d_key_callback_member<FUNC> key) { 
+        action* operator-=(callback::d_key_callback_member<FUNC> key) { 
             for (std::size_t i = 0; i < callbacks.size(); ++i) {
                 if(callbacks[i]->compare(&key)) {
                     callbacks.erase(callbacks.begin() + i);
@@ -419,7 +419,7 @@ namespace action{
             }
             return this;
         }
-        action* operator-=(const key_callback_global<void(ARGS...)>& key) { 
+        action* operator-=(const callback::key_callback_global<void(ARGS...)>& key) { 
             for (std::size_t i = 0; i < callbacks.size(); ++i) {
                 if(callbacks[i]->compare(key)) {
                     callbacks.erase(callbacks.begin() + i);
@@ -428,7 +428,7 @@ namespace action{
             }
             return this;
         }
-        action* operator-=(const key_callback_lambda& key) { 
+        action* operator-=(const callback::key_callback_lambda& key) { 
             for (std::size_t i = 0; i < callbacks.size(); ++i) {
                 if(callbacks[i]->compare(key)) {
                     callbacks.erase(callbacks.begin() + i);
