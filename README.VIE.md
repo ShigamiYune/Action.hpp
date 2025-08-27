@@ -24,14 +24,12 @@ Cho phép bạn đăng ký các callback (member function, const member, global/
 ## Public API
 
 * `action::action<Signature>` — container chứa các callback.
-* `action::make_callback<&Class::func>(object)` — tạo callback từ member/const member function.
-* `action::make_callback<&GlobalFunc>()` — tạo callback từ global/static function.
-* `action::make_callback<KEY>(lambda)` — tạo callback lambda (có capture và không capture), cần key duy nhất để xóa sau này.
-* `action::get_key_callback<&Class::func>(object)` — lấy key để xóa callback.
-* `action::get_key_callback<&GlobalFunc>()` — lấy key để xóa callback.
-* `action::get_key_callback<KEY>()` — lấy key để xóa callback.
-* `operator+=` — thêm callback vào `action`.
-* `operator-=` — xóa callback bằng key.
+* `action::action<Signature>::push_bach<&Class::func>(object)` — thêm callback từ member/const member function.
+* `action::action<Signature>::push_bach<&GlobalFunc>()` — thêm callback từ global/static function.
+* `action::action<Signature>::push_bach<KEY>(lambda)` — thêm callback (có capture và không capture), cần key duy nhất để xóa sau này.
+* `action::action<Signature>::erase<&Class::func>(object)` — xóa callback từ member/const member function.
+* `action::action<Signature>::erase<&GlobalFunc>()` — xóa callback global/static function.
+* `action::action<Signature>::erase<KEY>()` — xóa callback từ key.
 * `invoke(args...)` — thực thi tất cả callback đã đăng ký.
 
 ---
