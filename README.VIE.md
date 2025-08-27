@@ -15,9 +15,9 @@ Cho phép bạn đăng ký các callback (member function, const member, global/
 
 | Loại callback          | Dung lượng ước tính                                          |
 | ---------------------- | ------------------------------------------------------------ |
-| Member Function        | 24 bytes (16 heap + 8 ptr trong Action)                      |
-| Static/Global Function | 16 bytes (8 heap + 8 ptr trong Action)                       |
-| Lambda (có capture)    | 16 (8 heap + 8 ptr trong Action) + kích thước lambda (align) |
+| Member Function        | 24 bytes (16 heap + 8 ptr trong action::action)                      |
+| Static/Global Function | 16 bytes (8 heap + 8 ptr trong action::action)                       |
+| Lambda (có capture)    | 16 (8 heap + 8 ptr trong action::action) + kích thước lambda (align) |
 
 ---
 
