@@ -105,6 +105,16 @@ int main() {
 2. **Overloaded member functions**
 
    * Template cannot automatically resolve overloads; use explicit cast if needed.
+   * Example
+```
+struct MyClass {
+    void member(int x) { std::cout << "Member: " << x << "\n"; }
+    void member(ullong _double) { std::cout << "Member: " << _double << "\n"; }
+}
+
+// must cast when creating callback
+onEvent += action::make_callback<static_cast<void (MyClass::*)(int)>(&MyClass::member)>(&obj);
+```
 
 3. **Thread-safety**
 
