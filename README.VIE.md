@@ -1,4 +1,16 @@
-Hướng dẫn sử dụng Action.hpp
+# Action
+
+## Lượng bộ nhớ sử dụng trên hệ điều hành 64 bit
+
+| Loại Callback         | Ước tính sử dụng bộ nhớ             |
+|-----------------------|------------------------------------|
+| hàm thành viên        | 24 bytes (16 heap + 8 ptr in Action)   |
+| hàm thành viên hoặc hàm toàn cục | 16 bytes (8 heap + 8 ptr in Action)    |
+| hàm lambda  | 16(8 heap + 8 ptr in Action) + size of lambda (aligned)      |
+
+---
+
+## Mẫu sử dụng
 
 ``` cpp
 #include "Action.hpp"
@@ -66,8 +78,7 @@ int main() {
     // ==== Test multiple same key ====
     onEvent += action::make_callback<&global>();
     onEvent += action::make_callback<&global>();
-    auto key_global = action::get_key_callback<&global>();
-    onEvent -= key_global; // should remove first occurrence
+    onEvent -= action::get_key_callback<&global>(); // should remove first occurrence
 
     std::cout << "\nInvoke after removing one of multiple globals:\n";
     onEvent.invoke(30);
