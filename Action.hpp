@@ -34,21 +34,25 @@ namespace action{
         struct check_function {
         private:
             template <typename U>
-            static constexpr bool is_lambda_no_capture() {
-                return std::is_class_v<U> && std::is_convertible_v<U, void(*)()>;
-            }
+            struct is_lambda_no_capture_helper {
+                static const bool value =
+                    std::is_class<U>::value &&
+                    std::is_convertible<U, void(*)()>::value;
+            };
 
             template <typename U>
-            static constexpr bool is_lambda_with_capture() {
-                return std::is_class_v<U> && !is_lambda_no_capture<U>();
-            }
+            struct is_lambda_with_capture_helper {
+                static const bool value =
+                    std::is_class<U>::value &&
+                    !is_lambda_no_capture_helper<U>::value;
+            };
 
         public:
-            static constexpr unsigned char type =
-                std::is_member_function_pointer_v<T> ? 0 :
-                std::is_function_v<std::remove_pointer_t<T>> ? 1 :
-                is_lambda_no_capture<T>() ? 3 :
-                is_lambda_with_capture<T>() ? 4 : 255;
+            static const unsigned char type =
+                std::is_member_function_pointer<T>::value ? 0 :
+                std::is_function<typename std::remove_pointer<T>::type>::value ? 1 :
+                is_lambda_no_capture_helper<T>::value ? 3 :
+                is_lambda_with_capture_helper<T>::value ? 4 : 255;
         };
     }
 
@@ -79,41 +83,57 @@ namespace action{
 
         template<typename RETURN, typename CLASS, typename... ARGS>
         struct unpack<RETURN(CLASS::*)(ARGS...) volatile> {
+            using class_type = CLASS;
+            using return_type = RETURN;
             using signature = RETURN(ARGS...);
         };
 
         template<typename RETURN, typename CLASS, typename... ARGS>
         struct unpack<RETURN(CLASS::*)(ARGS...) const volatile> {
+            using class_type = CLASS;
+            using return_type = RETURN;
             using signature = RETURN(ARGS...);
         };
 
         template<typename RETURN, typename CLASS, typename... ARGS>
         struct unpack<RETURN(CLASS::*)(ARGS...) &> { 
+            using class_type = CLASS;
+            using return_type = RETURN;
             using signature = RETURN(ARGS...); 
         };
 
         template<typename RETURN, typename CLASS, typename... ARGS>
         struct unpack<RETURN(CLASS::*)(ARGS...) &&> { 
+            using class_type = CLASS;
+            using return_type = RETURN;
             using signature = RETURN(ARGS...); 
         };
 
         template<typename RETURN, typename CLASS, typename... ARGS>
         struct unpack<RETURN(CLASS::*)(ARGS...) const &> { 
+            using class_type = CLASS;
+            using return_type = RETURN;
             using signature = RETURN(ARGS...); 
         };
 
         template<typename RETURN, typename CLASS, typename... ARGS>
         struct unpack<RETURN(CLASS::*)(ARGS...) const &&> { 
+            using class_type = CLASS;
+            using return_type = RETURN;
             using signature = RETURN(ARGS...); 
         };
 
         template<typename RETURN, typename CLASS, typename... ARGS>
         struct unpack<RETURN(CLASS::*)(ARGS...) noexcept> {
+            using class_type = CLASS;
+            using return_type = RETURN;
             using signature = RETURN(ARGS...); 
         };
 
         template<typename RETURN, typename CLASS, typename... ARGS>
         struct unpack<RETURN(CLASS::*)(ARGS...) const noexcept> {
+            using class_type = CLASS;
+            using return_type = RETURN;
             using signature = RETURN(ARGS...); 
         };
 
@@ -249,6 +269,7 @@ namespace action{
         operator bool() { return !callbacks.empty(); }
 
         RETURN invoke(ARGS... args) {
+            if(callbacks.empty()) return;
             for (std::size_t i = 0; i < callbacks.size() - 1; ++i) {
                 callbacks[i]->invoke(args...);
             }
