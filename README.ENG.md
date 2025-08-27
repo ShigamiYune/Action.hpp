@@ -6,7 +6,7 @@
 |-----------------------|------------------------------------|
 | Member Function        | 24 bytes (16 heap + 8 ptr in Action)   |
 | Static/Global Function | 16 bytes (8 heap + 8 ptr in Action)    |
-| Lambda (with capture)  | 16(8 heap + 8 ptr in Action) + size of lambda (aligned)      |
+| Lambda (with capture)  | 16 (8 heap + 8 ptr in Action) + size of lambda (aligned)      |
 
 ---
 
@@ -78,8 +78,7 @@ int main() {
     // ==== Test multiple same key ====
     onEvent += action::make_callback<&global>();
     onEvent += action::make_callback<&global>();
-    auto key_global = action::get_key_callback<&global>();
-    onEvent -= key_global; // should remove first occurrence
+    onEvent -= action::get_key_callback<&global>(); // should remove first occurrence
 
     std::cout << "\nInvoke after removing one of multiple globals:\n";
     onEvent.invoke(30);
