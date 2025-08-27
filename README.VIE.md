@@ -107,7 +107,7 @@ int main() {
 
    * Template không tự phân biệt overload; nếu có overload, cần **cast rõ ràng** hoặc đổi tên function.
    * Ví dụ
-```
+``` cpp
 struct MyClass {
     void member(int x) { std::cout << "Member: " << x << "\n"; }
     void member(ullong _double) { std::cout << "Member: " << _double << "\n"; }
