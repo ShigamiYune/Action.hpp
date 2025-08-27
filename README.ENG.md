@@ -117,7 +117,7 @@ struct MyClass {
 
 action::action<void(int)> onEvent;
 
-// must pick when creating callback
+// must pick when add callback
 onEvent.push_back<onEvent.pick(&MyClass::member)>(&obj);
 ```
 
