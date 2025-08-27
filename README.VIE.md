@@ -44,6 +44,8 @@ Cho phép bạn đăng ký các callback (member function, const member, global/
 
 struct MyClass {
     void member(int x) { std::cout << "Member: " << x << "\n"; }
+    void member(ullong _double) { std::cout << "Member: " << _double << "\n"; }
+
     void member_const(int x) const { std::cout << "Const Member: " << x << "\n"; }
     static void _static(int x) { std::cout << "Static: " << x << "\n"; }
 };
@@ -57,23 +59,26 @@ int main() {
     action::action<int(int)> onEventReturn;
 
     // Thêm member callback
-    onEvent += action::make_callback<&MyClass::member>(&obj);
+    onEvent.push_back<onEvent.pick(&MyClass::member)>(&obj);
 
     // Thêm const member callback
-    onEvent += action::make_callback<&MyClass::member_const>(&const_obj);
+    onEvent.push_back<&MyClass::member_const>(&const_obj);
 
     // Thêm static/global callbacks
-    onEvent += action::make_callback<&MyClass::_static>();
-    onEvent += action::make_callback<&global>();
+    onEvent.push_back<&MyClass::_static>();
+    onEvent.push_back<&global>();
 
     // Thêm lambda có capture
     int val = 5;
     auto lambda = [val](int x){ std::cout << "Lambda capture: " << x + val << "\n"; };
-    onEvent += action::make_callback<42>(lambda);
+    onEvent.push_back<42>(lambda);
 
     // Thêm callback trả về giá trị
-    auto global_return = [](int x){ std::cout << "Return: " << x << "\n"; return x*2; };
-    onEventReturn += action::make_callback<24>(global_return);
+    auto global_return = [](int x){ 
+        std::cout << "Return: " << x << "\n"; 
+        return x*2; 
+    };
+    onEventReturn.push_back<24>(global_return);
 
     // Thực thi tất cả callback
     std::cout << "Thực thi tất cả callback:\n";
@@ -85,8 +90,8 @@ int main() {
     std::cout << "Giá trị trả về: " << ret << "\n";
 
     // Xóa callback bằng key
-    onEvent -= action::get_key_callback<&MyClass::member>(&obj);
-    onEvent -= action::get_key_callback<42>();
+    onEvent.erase(&MyClass::member, &obj);
+    onEvent.erase<42>();
 
     std::cout << "\nThực thi sau khi xóa một số callback:\n";
     onEvent.invoke(20);
@@ -105,7 +110,7 @@ int main() {
 
 2. **Member function overload**
 
-   * Template không tự phân biệt overload; nếu có overload, cần **cast rõ ràng** hoặc đổi tên function.
+   * Template không tự phân biệt overload; nếu có overload, cần **pick** hoặc đổi tên function.
    * Ví dụ
 ``` cpp
 struct MyClass {
@@ -115,8 +120,8 @@ struct MyClass {
 
 action::action<void(int)> onEvent;
 
-// phải cast khi tạo callback
-onEvent += action::make_callback<onEvent.pick(&MyClass::member)>(&obj);
+// phải pick khi thêm callback
+onEvent.push_back<onEvent.pick(&MyClass::member)>(&obj);
 ```
 
 3. **Thread-safety**
