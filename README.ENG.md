@@ -1,37 +1,4 @@
-# Action.hpp  
-# Delegate/Event System in C++ — Usage Guide
-
-The `Action` system below allows you to register multiple callbacks just like delegates in C#. Each `Action<Signature>` can hold multiple `ObjectEvent<Signature>` instances and invokes them sequentially when triggered.
-
----
-
-## Main Components
-
-- `Action<Return(Args...)>`: Manages the list of registered callbacks (delegate-like).
-
-- `ObjectEvent<Return(Args...)>`: Abstract interface for encapsulated callbacks.
-
-- `EVENT_*(...)` macros: Create callback instances from global, member, static, or lambda functions.
-
-- `GET_KEY_EVENT_*(...)` macros: Generate a unique key (pointer + name) for identifying or removing specific callbacks.
-
-## Macro Variables
-- CLASS : The class that owns the callback you want to register
-- FUNC : The name of the callback function to register
-- PTR : Pointer to the class instance (only used for member callbacks)
-- CALL : The function call expression (used for static and global callbacks)
-- RET : The return type of the callback
-- SIG : The function signature of the callback
----
-
-## Features
-
-- C#-like delegate/event API in C++
-- Supports lambdas, member functions, static functions, and global functions
-- Allows handler lookup and removal via `KeyEvent`
-- Lightweight and efficient memory usage
-
----
+# Action
 
 ## Memory Usage on 64-bit Systems
 
@@ -45,77 +12,78 @@ The `Action` system below allows you to register multiple callbacks just like de
 
 ## Example Usage
 
-### 1. Define class using `Action`:
-
 ```cpp
 #include "Action.hpp"
+#include <iostream>
 
-// Global free function
-int global_add(int x, int y) {
-    std::cout << "global_add: " << x << " + " << y << " = " << x + y << std::endl;
-    return x + y;
-}
-
-// Static function
-struct Math {
-    static int multiply(int x, int y) {
-        std::cout << "Math::multiply: " << x << " * " << y << " = " << x * y << std::endl;
-        return x * y;
-    }
+struct MyClass {
+    void member(int x) { std::cout << "Member: " << x << "\n"; }
+    void member_double(double x) { std::cout << "Member double: " << x << "\n"; }
+    void member_const(int x) const { std::cout << "Const Member: " << x << "\n"; }
+    static void _static(int x) { std::cout << "Static: " << x << "\n"; }
 };
 
-// A sample class with member function to handle events
-class MyClass {
-public:
-    int offset = 10;
-    int accumulate(int x, int y) {
-        int result = x + y + offset;
-        std::cout << "MyClass::accumulate: (" << x << ", " << y << ") + offset " << offset << " = " << result << std::endl;
-        return result;
-    }
-};
+void global(int x) { std::cout << "Global: " << x << "\n"; }
+static void global_static(int x) { std::cout << "Global Static: " << x << "\n"; }
+
+int global_return(int x) { std::cout << "Global return: " << x << "\n"; return x*2; }
 
 int main() {
-    // Define an Action taking two ints and returning int
-    Action<int(int,int)> action;
-
     MyClass obj;
+    action::action<void(int)> onEvent;
+    action::action<int(int)> onEventReturn;
 
-    // 1. Global function handler
-    action += CALLBACK_GLOBAL(global_add, global_add, int, (int, int));
+    // ==== Member function ====
+    onEvent += action::make_callback<&MyClass::member>(&obj);
 
-    // 2. Static member function handler
-    action += CALLBACK_STATIC_MEMBER(Math, multiply, Math::multiply, int, (int, int));
+    // ==== Const member function ====
+    const MyClass const_obj;
+    onEvent += action::make_callback<&MyClass::member_const>(&const_obj);
 
-    // 3. Member function handler
-    action += CALLBACK_MEMBER(MyClass, accumulate, &obj, int, (int, int));
+    // ==== Member function overload ==== that is error
+    // onEvent += action::make_callback<&MyClass::member_double>(&obj); 
 
-    // 4. Lambda handler capture
-    auto lambda = [](int x, int y) {
-        int result = x - y;
-        std::cout << "lambda: " << x << " - " << y << " = " << result << std::endl;
-        return result;
-    };
-    action += CALLBACK_LAMBDA_LOCAL(lambda, int, (int, int));
+    // ==== Static / global ====
+    onEvent += action::make_callback<&MyClass::_static>();
+    onEvent += action::make_callback<&global>();
+    onEvent += action::make_callback<&global_static>();
 
-    std::cout << "-- Invoking all handlers --" << std::endl;
-    int final_result = action.invoke(5, 3);
-    std::cout << "Final (last) result: " << final_result << std::endl;
+    // ==== Lambda ====
+    int capture_val = 5;
+    auto lambda = [capture_val](int x){ std::cout << "Lambda capture: " << x + capture_val << "\n"; };
+    onEvent += action::make_callback<42>(lambda);
 
-    std::cout << "-- Invoke specific handler by key --" << std::endl;
-    // Invoke only the accumulate member function
-    int acc_result = action.invoke_with_key(GET_KEY_CALLBACK_MEMBER(MyClass, accumulate, &obj), 2, 4);
-    std::cout << "Accumulate result: " << acc_result << std::endl;
+    auto lambda_mut = [y=10](int x) mutable { std::cout << "Lambda mutable: " << x + y << "\n"; };
+    onEvent += action::make_callback<43>(lambda_mut);
 
-    std::cout << "-- Removing global_add handler --" << std::endl;
-    action -= GET_KEY_CALLBACK_GLOBAL(global_add, global_add);
-    action.invoke(7, 2);
+    // ==== Function with return ====
+    onEventReturn += action::make_callback<&global_return>();
+    
+    // ==== Invoke ====
+    std::cout << "Invoke all callbacks with 10:\n";
+    onEvent.invoke(10);
 
-    std::cout << "-- Clearing all handlers --" << std::endl;
-    action.clear();
-    std::cout << "Handler count after clear: " << action.size() << std::endl;
+    std::cout << "\nInvoke return callback with 10:\n";
+    int ret = onEventReturn.invoke(10);
+    std::cout << "Return value: " << ret << "\n";
+
+    // ==== Test remove callbacks ====
+    onEvent -= action::get_key_callback<&MyClass::member>(&obj);
+    onEvent -= action::get_key_callback<&MyClass::_static>();
+    onEvent -= action::get_key_callback<42>();
+
+    std::cout << "\nInvoke after removing some callbacks:\n";
+    onEvent.invoke(20);
+
+    // ==== Test multiple same key ====
+    onEvent += action::make_callback<&global>();
+    onEvent += action::make_callback<&global>();
+    auto key_global = action::get_key_callback<&global>();
+    onEvent -= key_global; // should remove first occurrence
+
+    std::cout << "\nInvoke after removing one of multiple globals:\n";
+    onEvent.invoke(30);
 
     return 0;
 }
 ```
-All instructions above are written by ChatGPT, if there are any mistakes, please forgive me, I'm too lazy to write.
