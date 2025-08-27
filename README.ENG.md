@@ -100,7 +100,7 @@ int main() {
 
 1. **Lambda keys**
 
-   * Every lambda with capture must have a unique key (`uintptr_t`) for removal.
+   * Every lambda (with capture and without capture) must have a unique key (`uintptr_t`) for removal.
 
 2. **Overloaded member functions**
 
