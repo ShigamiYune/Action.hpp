@@ -116,7 +116,7 @@ struct MyClass {
 action::action<void(int)> onEvent;
 
 // phải cast khi tạo callback
-onEvent += action::make_callback<static_cast<void (MyClass::*)(int)>(&MyClass::member)>(&obj);
+onEvent += action::make_callback<onEvent.pick(&MyClass::member)>(&obj);
 ```
 
 3. **Thread-safety**
