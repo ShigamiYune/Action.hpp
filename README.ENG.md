@@ -43,6 +43,8 @@
 
 struct MyClass {
     void member(int x) { std::cout << "Member: " << x << "\n"; }
+    void member(ullong _double) { std::cout << "Member: " << _double << "\n"; }
+
     void member_const(int x) const { std::cout << "Const Member: " << x << "\n"; }
     static void _static(int x) { std::cout << "Static: " << x << "\n"; }
 };
@@ -56,36 +58,39 @@ int main() {
     action::action<int(int)> onEventReturn;
 
     // Add member callback
-    onEvent += action::make_callback<&MyClass::member>(&obj);
+    onEvent.push_back<&MyClass::member>(&obj);
 
     // Add const member callback
-    onEvent += action::make_callback<&MyClass::member_const>(&const_obj);
+    onEvent.push_back<&MyClass::member_const>(&const_obj);
 
     // Add static/global callbacks
-    onEvent += action::make_callback<&MyClass::_static>();
-    onEvent += action::make_callback<&global>();
+    onEvent.push_back<&MyClass::_static>();
+    onEvent.push_back<&global>();
 
     // Add lambda with capture
     int val = 5;
     auto lambda = [val](int x){ std::cout << "Lambda capture: " << x + val << "\n"; };
-    onEvent += action::make_callback<42>(lambda);
+    onEvent.push_back<42>(lambda);
 
-    // Add callback with return
-    auto global_return = [](int x){ std::cout << "Return: " << x << "\n"; return x*2; };
-    onEventReturn += action::make_callback<24>(global_return);
+    // Add callback with return value
+    auto global_return = [](int x){ 
+        std::cout << "Return: " << x << "\n"; 
+        return x*2; 
+    };
+    onEventReturn.push_back<24>(global_return);
 
     // Invoke all callbacks
     std::cout << "Invoke all callbacks:\n";
     onEvent.invoke(10);
 
-    // Invoke return callbacks
-    std::cout << "\nInvoke return callback:\n";
+    // Invoke callbacks with return value
+    std::cout << "\nInvoke callback with return value:\n";
     int ret = onEventReturn.invoke(10);
-    std::cout << "Return value: " << ret << "\n";
+    std::cout << "Returned value: " << ret << "\n";
 
-    // Remove callbacks using keys
-    onEvent -= action::get_key_callback<&MyClass::member>(&obj);
-    onEvent -= action::get_key_callback<42>();
+    // Remove callback by key
+    onEvent.erase(&MyClass::member, &obj);
+    onEvent.erase<42>();
 
     std::cout << "\nInvoke after removing some callbacks:\n";
     onEvent.invoke(20);
@@ -104,7 +109,7 @@ int main() {
 
 2. **Overloaded member functions**
 
-   * Template cannot automatically resolve overloads; use explicit cast if needed.
+   * Template cannot automatically resolve overloads; use explicit **pick** if needed.
    * Example
 ``` cpp
 struct MyClass {
@@ -114,8 +119,8 @@ struct MyClass {
 
 action::action<void(int)> onEvent;
 
-// must cast when creating callback
-onEvent += action::make_callback<onEvent.pick(&MyClass::member)>(&obj);
+// must pick when creating callback
+onEvent.push_back<onEvent.pick(&MyClass::member)>(&obj);
 ```
 
 3. **Thread-safety**
