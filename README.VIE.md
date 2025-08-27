@@ -6,33 +6,73 @@ Hướng dẫn sử dụng Action.hpp
 
 struct MyClass {
     void member(int x) { std::cout << "Member: " << x << "\n"; }
-    static void static(int x) { std::cout << "Static: " << x << "\n"; }
+    void member_double(double x) { std::cout << "Member double: " << x << "\n"; }
+    void member_const(int x) const { std::cout << "Const Member: " << x << "\n"; }
+    static void _static(int x) { std::cout << "Static: " << x << "\n"; }
 };
 
 void global(int x) { std::cout << "Global: " << x << "\n"; }
 static void global_static(int x) { std::cout << "Global Static: " << x << "\n"; }
 
+int global_return(int x) { std::cout << "Global return: " << x << "\n"; return x*2; }
+
 int main() {
     MyClass obj;
     action::action<void(int)> onEvent;
+    action::action<int(int)> onEventReturn;
 
+    // ==== Member function ====
     onEvent += action::make_callback<&MyClass::member>(&obj);
-    onEvent += action::make_callback<&MyClass::static>();
+
+    // ==== Const member function ====
+    const MyClass const_obj;
+    onEvent += action::make_callback<&MyClass::member_const>(&const_obj);
+
+    // ==== Member function overload ==== that is error
+    // onEvent += action::make_callback<&MyClass::member_double>(&obj); 
+
+    // ==== Static / global ====
+    onEvent += action::make_callback<&MyClass::_static>();
     onEvent += action::make_callback<&global>();
     onEvent += action::make_callback<&global_static>();
 
-    auto lambda = [](int x){ std::cout << "Lambda: " << x << "\n"; };
-    onEvent += action::make_callback<42>(lambda); // key = 42
+    // ==== Lambda ====
+    int capture_val = 5;
+    auto lambda = [capture_val](int x){ std::cout << "Lambda capture: " << x + capture_val << "\n"; };
+    onEvent += action::make_callback<42>(lambda);
 
+    auto lambda_mut = [y=10](int x) mutable { std::cout << "Lambda mutable: " << x + y << "\n"; };
+    onEvent += action::make_callback<43>(lambda_mut);
+
+    // ==== Function with return ====
+    onEventReturn += action::make_callback<&global_return>();
+    
+    // ==== Invoke ====
+    std::cout << "Invoke all callbacks with 10:\n";
     onEvent.invoke(10);
 
-    // Xóa callback
+    std::cout << "\nInvoke return callback with 10:\n";
+    int ret = onEventReturn.invoke(10);
+    std::cout << "Return value: " << ret << "\n";
+
+    // ==== Test remove callbacks ====
     onEvent -= action::get_key_callback<&MyClass::member>(&obj);
-    onEvent -= action::make_callback<&global_static>();
+    onEvent -= action::get_key_callback<&MyClass::_static>();
     onEvent -= action::get_key_callback<42>();
 
+    std::cout << "\nInvoke after removing some callbacks:\n";
     onEvent.invoke(20);
+
+    // ==== Test multiple same key ====
+    onEvent += action::make_callback<&global>();
+    onEvent += action::make_callback<&global>();
+    auto key_global = action::get_key_callback<&global>();
+    onEvent -= key_global; // should remove first occurrence
+
+    std::cout << "\nInvoke after removing one of multiple globals:\n";
+    onEvent.invoke(30);
+
+    return 0;
 }
 ```
-
 Toàn bộ hưỡng dẫn trên là do ChatGPT viết, nếu có gì sai sót thì mong bạn bỏ qua chú tôi lười viết quá.
