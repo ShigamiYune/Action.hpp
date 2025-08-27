@@ -113,6 +113,8 @@ struct MyClass {
     void member(ullong _double) { std::cout << "Member: " << _double << "\n"; }
 }
 
+action::action<void(int)> onEvent;
+
 // phải cast khi tạo callback
 onEvent += action::make_callback<static_cast<void (MyClass::*)(int)>(&MyClass::member)>(&obj);
 ```
