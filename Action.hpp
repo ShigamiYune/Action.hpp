@@ -11,281 +11,250 @@
 #ifndef ACTION_H
 #define ACTION_H
 
-#pragma region ACTION_GEN
-
-#define ACTION_COUNT_ARGS_IMPL(_1, _0, N, ...) N
-#define ACTION_COUNT_ARGS(...) ACTION_COUNT_ARGS_IMPL(__VA_ARGS__, 1,0)
-
-#define ACTION_CAT_IMPL(a,b) a##b
-#define ACTION_CAT(a,b) ACTION_CAT_IMPL(a,b)
-
-#define ACTION_GEN_PARAMS__0()
-#define ACTION_GEN_PARAMS__1(T1) T1 a1
-
-#define ACTION_GEN_PARAMS_1(...) ACTION_CAT(ACTION_GEN_PARAMS__, ACTION_COUNT_ARGS(__VA_ARGS__))(__VA_ARGS__)
-
-#define ACTION_GEN_PARAMS_2(T1, T2)   T1 a1, T2 a2
-#define ACTION_GEN_PARAMS_3(T1, T2, T3)   T1 a1, T2 a2, T3 a3
-#define ACTION_GEN_PARAMS_4(T1, T2, T3, T4)   T1 a1, T2 a2, T3 a3, T4 a4
-#define ACTION_GEN_PARAMS_5(T1, T2, T3, T4, T5)   T1 a1, T2 a2, T3 a3, T4 a4, T5 a5
-#define ACTION_GEN_PARAMS_6(T1, T2, T3, T4, T5, T6)   T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6
-#define ACTION_GEN_PARAMS_7(T1, T2, T3, T4, T5, T6, T7)   T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7
-#define ACTION_GEN_PARAMS_8(T1, T2, T3, T4, T5, T6, T7, T8)   T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7, T8 a8
-#define ACTION_GEN_PARAMS_9(T1, T2, T3, T4, T5, T6, T7, T8, T9)   T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7, T8 a8, T9 a9
-#define ACTION_GEN_PARAMS_10(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)   T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7, T8 a8, T9 a9, T10 a10
-#define ACTION_GEN_PARAMS_11(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11)   T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7, T8 a8, T9 a9, T10 a10, T11 a11
-#define ACTION_GEN_PARAMS_12(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12)   T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7, T8 a8, T9 a9, T10 a10, T11 a11, T12 a12
-#define ACTION_GEN_PARAMS_13(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13)   T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7, T8 a8, T9 a9, T10 a10, T11 a11, T12 a12, T13 a13
-#define ACTION_GEN_PARAMS_14(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14)   T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7, T8 a8, T9 a9, T10 a10, T11 a11, T12 a12, T13 a13, T14 a14
-#define ACTION_GEN_PARAMS_15(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15)   T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7, T8 a8, T9 a9, T10 a10, T11 a11, T12 a12, T13 a13, T14 a14, T15 a15
-#define ACTION_GEN_PARAMS_16(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16)   T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7, T8 a8, T9 a9, T10 a10, T11 a11, T12 a12, T13 a13, T14 a14, T15 a15, T16 a16
-#define ACTION_GEN_PARAMS_17(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17)   T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7, T8 a8, T9 a9, T10 a10, T11 a11, T12 a12, T13 a13, T14 a14, T15 a15, T16 a16, T17 a17
-#define ACTION_GEN_PARAMS_18(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18)   T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7, T8 a8, T9 a9, T10 a10, T11 a11, T12 a12, T13 a13, T14 a14, T15 a15, T16 a16, T17 a17, T18 a18
-#define ACTION_GEN_PARAMS_19(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19)   T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7, T8 a8, T9 a9, T10 a10, T11 a11, T12 a12, T13 a13, T14 a14, T15 a15, T16 a16, T17 a17, T18 a18, T19 a19
-#define ACTION_GEN_PARAMS_20(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20)   T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7, T8 a8, T9 a9, T10 a10, T11 a11, T12 a12, T13 a13, T14 a14, T15 a15, T16 a16, T17 a17, T18 a18, T19 a19, T20 a20
-
-#define ACTION_GEN_VAR__0()
-#define ACTION_GEN_VAR__1(T1) a1
-
-#define ACTION_GEN_VAR_1(...) ACTION_CAT(ACTION_GEN_VAR__, ACTION_COUNT_ARGS(__VA_ARGS__))(__VA_ARGS__)
-#define ACTION_GEN_VAR_2(T1, T2)   a1, a2
-#define ACTION_GEN_VAR_3(T1, T2, T3)   a1, a2, a3
-#define ACTION_GEN_VAR_4(T1, T2, T3, T4)   a1, a2, a3, a4
-#define ACTION_GEN_VAR_5(T1, T2, T3, T4, T5)   a1, a2, a3, a4, a5
-#define ACTION_GEN_VAR_6(T1, T2, T3, T4, T5, T6)   a1, a2, a3, a4, a5, a6
-#define ACTION_GEN_VAR_7(T1, T2, T3, T4, T5, T6, T7)   a1, a2, a3, a4, a5, a6, a7
-#define ACTION_GEN_VAR_8(T1, T2, T3, T4, T5, T6, T7, T8)   a1, a2, a3, a4, a5, a6, a7, a8
-#define ACTION_GEN_VAR_9(T1, T2, T3, T4, T5, T6, T7, T8, T9)   a1, a2, a3, a4, a5, a6, a7, a8, a9
-#define ACTION_GEN_VAR_10(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)   a1, a2, a3, a4, a5, a6, a7, a8, a9, a10
-#define ACTION_GEN_VAR_11(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11)   a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11
-#define ACTION_GEN_VAR_12(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12)   a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12
-#define ACTION_GEN_VAR_13(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13)   a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13
-#define ACTION_GEN_VAR_14(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14)   a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14
-#define ACTION_GEN_VAR_15(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15)   a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15
-#define ACTION_GEN_VAR_16(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16)   a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16
-#define ACTION_GEN_VAR_17(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17)   a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17
-#define ACTION_GEN_VAR_18(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18)   a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18
-#define ACTION_GEN_VAR_19(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19)   a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19
-#define ACTION_GEN_VAR_20(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20)   a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20
-
-#define ACTION_GET_MACRO(_1,_2,_3,_4,_5,_6,_7,_8,_9,_10,_11,_12,_13,_14,_15,_16,_17,_18,_19,_20,NAME, ...) NAME
-
-#define ACTION_GEN_PARAMS(...) \
-    ACTION_GET_MACRO(__VA_ARGS__, ACTION_GEN_PARAMS_20, ACTION_GEN_PARAMS_19, ACTION_GEN_PARAMS_18, ACTION_GEN_PARAMS_17, ACTION_GEN_PARAMS_16, ACTION_GEN_PARAMS_15, ACTION_GEN_PARAMS_14, ACTION_GEN_PARAMS_13, ACTION_GEN_PARAMS_12, ACTION_GEN_PARAMS_11, ACTION_GEN_PARAMS_10, ACTION_GEN_PARAMS_9, ACTION_GEN_PARAMS_8, ACTION_GEN_PARAMS_7, ACTION_GEN_PARAMS_6, ACTION_GEN_PARAMS_5, ACTION_GEN_PARAMS_4, ACTION_GEN_PARAMS_3, ACTION_GEN_PARAMS_2, ACTION_GEN_PARAMS_1)(__VA_ARGS__)
-
-#define ACTION_GEN_VAR(...) \
-    ACTION_GET_MACRO(__VA_ARGS__, ACTION_GEN_VAR_20, ACTION_GEN_VAR_19, ACTION_GEN_VAR_18, ACTION_GEN_VAR_17, ACTION_GEN_VAR_16, ACTION_GEN_VAR_15, ACTION_GEN_VAR_14, ACTION_GEN_VAR_13, ACTION_GEN_VAR_12, ACTION_GEN_VAR_11, ACTION_GEN_VAR_10, ACTION_GEN_VAR_9, ACTION_GEN_VAR_8, ACTION_GEN_VAR_7, ACTION_GEN_VAR_6, ACTION_GEN_VAR_5, ACTION_GEN_VAR_4, ACTION_GEN_VAR_3, ACTION_GEN_VAR_2, ACTION_GEN_VAR_1)(__VA_ARGS__)
-
-#define ACTION_UNWRAP_I(...) __VA_ARGS__
-#define ACTION_UNWRAP(X) ACTION_UNWRAP_I X
-
-#pragma endregion
-
 #include <vector>
 #include <memory>
 
-struct KeyCallback{
-    const void* ptr;
-    const wchar_t* name;
-};
+namespace action{
+    struct key_callback {
+        std::uintptr_t ptr;
+        std::uintptr_t key;
+    };
 
-template<typename Signature> class ObjectCallback;
-template<typename Return, typename ... Args>
-class ObjectCallback<Return(Args...)>{
-public:
-    virtual ~ObjectCallback(){}
-    virtual Return invoke(Args ...) = 0;
-    virtual bool compare(const KeyCallback& key) const {return false;}
-};
-
-template<typename Signature> class Action;
-template<typename Return, typename ... Args>
-class Action<Return(Args...)> {
-    std::vector<std::unique_ptr<ObjectCallback<Return(Args ...)>>> callback;
-public:
-    void add_callback(std::unique_ptr<ObjectCallback<Return(Args ...)>> _callback){
-        callback.push_back(std::move(_callback));
-    }
-
-    inline Return invoke(Args ... arg){
-        std::size_t size = callback.size();
-        if(size == 0) return {}; 
-        size -= 1;
-        for(int i = 0; i < size; i++){
-            callback[i]->invoke(arg...);
-        }
-        return callback[size]->invoke(arg...);
-    }
-
-    Action& operator+=(std::unique_ptr<ObjectCallback<Return(Args ...)>> _callback) {
-        callback.push_back(std::move(_callback));
-        return *this;
-    }
-
-    Action& operator-=(const KeyCallback& key) {
-        auto it = std::remove_if(callback.begin(), callback.end(),
-            [key](const std::unique_ptr<ObjectCallback<Return(Args ...)>>& e) {
-                return e.get()->compare(key);
-            });
-
-        callback.erase(it, callback.end());
-        return *this;
-    }
-
-    inline std::size_t size() const { return callback.size(); }
-    inline void clear() { callback.clear(); }
-
-    inline Return invoke_with_key(const KeyCallback& key, Args ... arg){
-        std::size_t size = callback.size();
-        if(size == 0) return {}; 
-        for(int i = 0; i < size; i++){
-            auto ptr = callback[i].get();
-            if(ptr->compare(key)) return ptr->invoke(arg ...);
-        }
-        return {}; 
-    }
-};
-
-template<typename ... Args>
-class Action<void(Args...)> {
-    std::vector<std::unique_ptr<ObjectCallback<void(Args ...)>>> callback;
-public:
-    void add_callback(std::unique_ptr<ObjectCallback<void(Args ...)>> _callback){
-        callback.push_back(std::move(_callback));
-    }
-
-    inline void invoke(Args ... arg){
-        std::size_t size = callback.size();
-        if(size == 0) return; 
-        size -= 1;
-        for(int i = 0; i < size; i++){
-            callback[i]->invoke(arg...);
-        }
-        callback[size]->invoke(arg...);
-    }
-
-    Action& operator+=(std::unique_ptr<ObjectCallback<void(Args ...)>> _callback) {
-        callback.push_back(std::move(_callback));
-        return *this;
-    }
-
-    Action& operator-=(const KeyCallback& key) {
-        auto it = std::remove_if(callback.begin(), callback.end(),
-            [key](const std::unique_ptr<ObjectCallback<void(Args ...)>>& e) {
-                return e.get()->compare(key);
-            });
-
-        callback.erase(it, callback.end());
-        return *this;
-    }
-
-    inline std::size_t size() const { return callback.size(); }
-    inline void clear() { callback.clear(); }
-
-    inline void invoke_with_key(const KeyCallback& key, Args ... arg){
-        std::size_t size = callback.size();
-        if(size == 0) return; 
-        for(int i = 0; i < size; i++){
-            auto ptr = callback[i].get();
-            if(ptr->compare(key)) ptr->invoke(arg ...); return;
-        }
-    }
-};
-
-template<typename T, typename Signature> class Lambda_Local;
-template<typename T, typename Return, typename ... Args>
-class Lambda_Local<T, Return(Args ...)> : public ObjectCallback<Return(Args ...)> {
+    template<typename SIGNATURE> class object_callback;
+    template<typename RETURN, typename ... ARGS>
+    class object_callback<RETURN(ARGS...)>{
     public:
-    T fn; Lambda_Local(T _fn) : fn(_fn) {}
-    Return invoke(Args ... args) override { return fn(args ...);}
-};
+        virtual ~object_callback(){}
+        virtual RETURN invoke(ARGS ...) = 0;
+        virtual bool compare(key_callback&) = 0;
+    };
 
-#define WIDEN2(x) L##x
-#define WIDEN(x) WIDEN2(x)
+    namespace check {
+        template <typename T>
+        struct check_function {
+        private:
+            template <typename U>
+            static constexpr bool is_lambda_no_capture() {
+                return std::is_class_v<U> && std::is_convertible_v<U, void(*)()>;
+            }
 
-// Used for class member functions (non-static)
-#define CALLBACK_MEMBER(CLASS, FUNC, PTR, RET, SIG)                                                                     \
-[PTR] () {                                                                                                              \
-    struct CallBack : ObjectCallback<RET(SIG)>{                                                                         \
-        CLASS* ptr = nullptr; CallBack(CLASS* _ptr) : ptr(_ptr){}                                                       \
-        RET invoke(ACTION_GEN_PARAMS(ACTION_UNWRAP(SIG))) override {                                                    \
-             return ptr->FUNC(ACTION_GEN_VAR(ACTION_UNWRAP(SIG)));                                                      \
-        }                                                                                                               \
-        bool compare(const KeyCallback& key) const override {                                                           \
-             return ptr == key.ptr && wcscmp(key.name, WIDEN(#FUNC)) == 0;                                              \
-        }                                                                                                               \
-    };                                                                                                                  \
-    return std::make_unique<CallBack>(PTR);                                                                             \
-}()
+            template <typename U>
+            static constexpr bool is_lambda_with_capture() {
+                return std::is_class_v<U> && !is_lambda_no_capture<U>();
+            }
 
-// Used for static member functions
-#define CALLBACK_STATIC_MEMBER(CLASS, FUNC, CALL, RET, SIG)                                                             \
-[] () {                                                                                                                 \
-    struct Callback : ObjectCallback<RET(SIG)>{                                                                         \
-        RET invoke(ACTION_GEN_PARAMS(ACTION_UNWRAP(SIG))) override {                                                    \
-             return CALL(ACTION_GEN_VAR(ACTION_UNWRAP(SIG)));                                                           \
-        }                                                                                                               \
-        bool compare(const KeyCallback& key) const override {                                                           \
-             return &CALL == key.ptr && wcscmp(key.name, WIDEN(#FUNC)) == 0;                                            \
-        }                                                                                                               \
-    };                                                                                                                  \
-    return std::make_unique<Callback>();                                                                                \
-}()
+        public:
+            static constexpr unsigned char type =
+                std::is_member_function_pointer_v<T> ? 0 :
+                std::is_function_v<std::remove_pointer_t<T>> ? 1 :
+                is_lambda_no_capture<T>() ? 3 :
+                is_lambda_with_capture<T>() ? 4 : 255;
+        };
+    }
 
-// Used for global or free functions (non-member)
-#define CALLBACK_GLOBAL(FUNC, CALL, RET, SIG)                                                                           \
-[] () {                                                                                                                 \
-    struct Callback : ObjectCallback<RET(SIG)>{                                                                         \
-        RET invoke(ACTION_GEN_PARAMS(ACTION_UNWRAP(SIG))) override {                                                    \
-             return CALL(ACTION_GEN_VAR(ACTION_UNWRAP(SIG)));                                                           \
-        }                                                                                                               \
-        bool compare(const KeyCallback& key) const override {                                                           \
-             return reinterpret_cast<const void*>(                                                                      \
-                reinterpret_cast<uintptr_t>(&CALL)) == key.ptr && wcscmp(key.name, WIDEN(#FUNC)) == 0;                  \
-        }                                                                                                               \
-    };                                                                                                                  \
-    return std::make_unique<Callback>();                                                                                \
-}()
+    namespace unpack {
+        template<typename T>
+        struct unpack;
 
-// Used for local lambdas, std::bind and std::function defined in the same function scope (with or without capture)
-#define CALLBACK_LAMBDA_LOCAL(FUNC, RET, SIG)                                                                           \
-[FUNC] () {                                                                                                             \
-    struct Callback : Lambda_Local<decltype(FUNC), RET(SIG)>{                                                           \
-        Callback(decltype(FUNC) _fn) : Lambda_Local(_fn){}                                                              \
-        RET invoke(ACTION_GEN_PARAMS(ACTION_UNWRAP(SIG))) override {                                                    \
-             return fn(ACTION_GEN_VAR(ACTION_UNWRAP(SIG)));                                                             \
-        }                                                                                                               \
-        bool compare(const KeyCallback& key) const override {                                                           \
-             return wcscmp(key.name, WIDEN(#FUNC)) == 0;                                                                \
-        }                                                                                                               \
-    };                                                                                                                  \
-    return std::make_unique<Callback>(FUNC);                                                                            \
-}()
+        template<typename CLASS, typename RETURN, typename... ARGS>
+        struct unpack<RETURN(CLASS::*)(ARGS...)> {
+            using class_type = CLASS;
+            using return_type = RETURN;
+            using signature = RETURN(ARGS...);
+        };
 
-/// Used for inline lambdas or std::bind expressions declared directly inside the macro.
-/// FUNC is used as the key name, BOUND_FUNC is the callable (lambda or bind) expression.
-#define CALLBACK_INLINE(FUNC, CAPTURE, BOUND_FUNC, RET, SIG)                                                           \
-[ACTION_UNWRAP(CAPTURE)]() {                                                                                           \
-    auto FUNC = BOUND_FUNC;                                                                                            \
-    struct Callback : Lambda_Local<decltype(FUNC), RET(SIG)>{                                                          \
-        Callback(decltype(FUNC) _fn) : Lambda_Local(_fn){}                                                             \
-        RET invoke(ACTION_GEN_PARAMS(ACTION_UNWRAP(SIG))) override {                                                   \
-             return fn(ACTION_GEN_VAR(ACTION_UNWRAP(SIG)));                                                            \
-        }                                                                                                              \
-        bool compare(const KeyCallback& key) const override {                                                          \
-             return wcscmp(key.name, WIDEN(#FUNC)) == 0;                                                               \
-        }                                                                                                              \
-    };                                                                                                                 \
-    return std::make_unique<Callback>(std::move(FUNC));                                                                \
-}()
+        template<typename CLASS, typename RETURN, typename... ARGS>
+        struct unpack<RETURN(CLASS::*)(ARGS...) const> {
+            using class_type = CLASS;
+            using return_type = RETURN;
+            using signature = RETURN(ARGS...);
+        };
 
-// Key for CALLBACK_INLINE and CALLBACK_LAMBDA_LOCAL
-#define GET_KEY_CALLBACK_INLINE(FUNC) KeyCallback(nullptr, WIDEN(#FUNC))
-// Key for CALLBACK_MEMBER
-#define GET_KEY_CALLBACK_MEMBER(CLASS, FUNC, PTR) KeyCallback(PTR, WIDEN(#FUNC))
-// Key for CALLBACK_MEMBER_STATIC
-#define GET_KEY_CALLBACK_STATIC(CLASS, FUNC, CALL) KeyCallback(&CALL, WIDEN(#FUNC))
-// Key for CALLBACK_GLOBAL
-#define GET_KEY_CALLBACK_GLOBAL(FUNC, CALL) KeyCallback(\
-    reinterpret_cast<const void*>(reinterpret_cast<uintptr_t>(&CALL)), WIDEN(#FUNC))
+        template<typename RETURN, typename... ARGS>
+        struct unpack<RETURN(*)(ARGS...)> {
+            using class_type = void;
+            using return_type = RETURN;
+            using signature = RETURN(ARGS...);
+        };
+
+        template<typename RETURN, typename CLASS, typename... ARGS>
+        struct unpack<RETURN(CLASS::*)(ARGS...) volatile> {
+            using signature = RETURN(ARGS...);
+        };
+
+        template<typename RETURN, typename CLASS, typename... ARGS>
+        struct unpack<RETURN(CLASS::*)(ARGS...) const volatile> {
+            using signature = RETURN(ARGS...);
+        };
+
+        template<typename RETURN, typename CLASS, typename... ARGS>
+        struct unpack<RETURN(CLASS::*)(ARGS...) &> { 
+            using signature = RETURN(ARGS...); 
+        };
+
+        template<typename RETURN, typename CLASS, typename... ARGS>
+        struct unpack<RETURN(CLASS::*)(ARGS...) &&> { 
+            using signature = RETURN(ARGS...); 
+        };
+
+        template<typename RETURN, typename CLASS, typename... ARGS>
+        struct unpack<RETURN(CLASS::*)(ARGS...) const &> { 
+            using signature = RETURN(ARGS...); 
+        };
+
+        template<typename RETURN, typename CLASS, typename... ARGS>
+        struct unpack<RETURN(CLASS::*)(ARGS...) const &&> { 
+            using signature = RETURN(ARGS...); 
+        };
+
+        template<typename RETURN, typename CLASS, typename... ARGS>
+        struct unpack<RETURN(CLASS::*)(ARGS...) noexcept> {
+            using signature = RETURN(ARGS...); 
+        };
+
+        template<typename RETURN, typename CLASS, typename... ARGS>
+        struct unpack<RETURN(CLASS::*)(ARGS...) const noexcept> {
+            using signature = RETURN(ARGS...); 
+        };
+
+
+        template<typename L>
+        struct lambda_unpack {
+            using pointer_type = decltype(&L::operator());
+            using signature = typename unpack<pointer_type>::signature;
+        };
+    }
+
+    namespace callback {
+        template<auto FUNC, typename SIGNATURE, 
+            unsigned char type = ::action::check::check_function<decltype(FUNC)>::type>
+        struct callback;
+
+        template<auto FUNC, typename RETURN, typename... ARGS>
+        class callback<FUNC, RETURN(ARGS...), 0> : public object_callback<RETURN(ARGS...)>{
+            using class_type = unpack::unpack<decltype(FUNC)>::class_type;
+            class_type* _object;
+        public:
+            callback(class_type* object) : _object(object) {}
+
+            RETURN invoke(ARGS... args) override{
+                return (_object->*FUNC)(args...);
+            }
+            bool compare(key_callback& key) override {
+                return 
+                    (reinterpret_cast<std::uintptr_t>(_object) == key.ptr) 
+                    && 
+                    (reinterpret_cast<std::uintptr_t>(FUNC) == key.key);
+            }
+        };
+
+        template<auto FUNC, typename RETURN, typename... ARGS>
+        class callback<FUNC, RETURN(ARGS...), 1> : public object_callback<RETURN(ARGS...)> {
+        public:
+            callback() = default;
+
+            RETURN invoke(ARGS... args) override { return (*FUNC)(args...); }
+            bool compare(key_callback& key) override {
+                return (reinterpret_cast<std::uintptr_t>(FUNC) == key.key);
+            }
+        };
+
+        template<auto FUNC, typename RETURN, typename... ARGS>
+        class callback<FUNC, RETURN(ARGS...), 3> : public object_callback<RETURN(ARGS...)> {
+        public:
+            callback() = default;
+
+            RETURN invoke(ARGS... args) override { return FUNC(args...); }
+            bool compare(key_callback& key) override {
+                return (reinterpret_cast<std::uintptr_t>(FUNC) == key.key);
+            }
+        };
+
+        template<typename F, typename SIGNATURE, std::uintptr_t key>
+        class lambda_callback;
+
+        template<typename F, std::uintptr_t key , typename RETURN, typename... ARGS>
+        class lambda_callback<F, RETURN(ARGS...), key> : public object_callback<RETURN(ARGS...)> {
+            F func;
+        public:
+            explicit lambda_callback(F f) : func(std::move(f)) {}
+
+            RETURN invoke(ARGS... args) override { return func(args...); }
+            bool compare(key_callback& _key) override {
+                return (key == _key.ptr) && (key == _key.key);
+            }
+        };
+    }
+
+    // ---- MAKE CALL BACK
+    template<auto FUNC>
+    auto make_callback(typename unpack::unpack<decltype(FUNC)>::class_type * object) {
+        using sig = unpack::unpack<decltype(FUNC)>::signature;
+        using cb_t = callback::callback<FUNC, sig>;
+        return std::make_unique<cb_t>(object);
+    }
+
+    template<auto FUNC>
+    auto make_callback() {
+        using sig = unpack::unpack<decltype(FUNC)>::signature;
+        using cb_t = callback::callback<FUNC, sig>;
+        return std::make_unique<cb_t>();
+    }
+
+    template<std::uintptr_t key, typename FUNC>
+    auto make_callback(FUNC f) {
+        using sig = typename unpack::lambda_unpack<FUNC>::signature;
+        using cb_t = ::action::callback::lambda_callback<FUNC, sig, key>;
+        return std::make_unique<cb_t>(std::move(f));
+    }
+
+    // ---- GET KEY FOR CALL BACK
+    template<typename CLASS, auto FUNC>
+    key_callback get_key_callback(CLASS* object) {
+        return key_callback(
+            reinterpret_cast<std::uintptr_t>(object), 
+            reinterpret_cast<std::uintptr_t>(FUNC));
+    }
+
+    template<auto FUNC>
+    key_callback get_key_callback() {
+        return key_callback(0, reinterpret_cast<std::uintptr_t>(FUNC));
+    }
+
+    template<std::uintptr_t key>
+    key_callback get_key_callback() { return key_callback(key, key); }
+
+    template<typename SIGNATURE> class action;
+    template<typename RETURN, typename... ARGS> 
+    class action<RETURN(ARGS...)> {
+    public:
+        using object_type = std::unique_ptr<object_callback<RETURN(ARGS...)>>;
+
+        std::vector<object_type> callbacks;
+
+        action* operator+=(object_type object) { 
+            callbacks.push_back(std::move(object));  
+            return this;
+        }
+        action* operator-=(key_callback& key) { 
+            for (std::size_t i = 0; i < callbacks.size(); ++i) {
+                if(callbacks[i]->compare(key)) {
+                    callbacks.erase(callbacks.begin() + i);
+                    return this;
+                }
+            }
+            return this;
+        }
+
+        operator bool() { return !callbacks.empty(); }
+
+        RETURN invoke(ARGS... args) {
+            for (std::size_t i = 0; i < callbacks.size() - 1; ++i) {
+                callbacks[i]->invoke(args...);
+            }
+            return callbacks[callbacks.size() - 1]->invoke(args...);
+        }
+    };
+}
+
 #endif
