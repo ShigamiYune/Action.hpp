@@ -28,6 +28,8 @@ Cho phép bạn đăng ký các callback (member function, const member, global/
 * `action::make_callback<&GlobalFunc>()` — tạo callback từ global/static function.
 * `action::make_callback<KEY>(lambda)` — tạo callback lambda có capture, cần key duy nhất để xóa sau này.
 * `action::get_key_callback<&Class::func>(object)` — lấy key để xóa callback.
+* `action::get_key_callback<&GlobalFunc>()` — lấy key để xóa callback.
+* `action::get_key_callback<KEY>()` — lấy key để xóa callback.
 * `operator+=` — thêm callback vào `action`.
 * `operator-=` — xóa callback bằng key.
 * `invoke(args...)` — thực thi tất cả callback đã đăng ký.
