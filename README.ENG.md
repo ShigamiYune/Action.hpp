@@ -14,9 +14,9 @@
 
 | Callback Type          | Estimated Memory Usage                                   |
 | ---------------------- | -------------------------------------------------------- |
-| Member Function        | 24 bytes (16 heap + 8 ptr in Action)                     |
-| Static/Global Function | 16 bytes (8 heap + 8 ptr in Action)                      |
-| Lambda (with capture)  | 16 (8 heap + 8 ptr in Action) + size of lambda (aligned) |
+| Member Function        | 24 bytes (16 heap + 8 ptr in action::action)                     |
+| Static/Global Function | 16 bytes (8 heap + 8 ptr in action::action)                      |
+| Lambda (with capture)  | 16 (8 heap + 8 ptr in action::action) + size of lambda (aligned) |
 
 ---
 
