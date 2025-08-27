@@ -73,7 +73,7 @@ int main() {
 
     // Thêm callback trả về giá trị
     auto global_return = [](int x){ std::cout << "Return: " << x << "\n"; return x*2; };
-    onEventReturn += action::make_callback<global_return>();
+    onEventReturn += action::make_callback<24>(global_return);
 
     // Thực thi tất cả callback
     std::cout << "Thực thi tất cả callback:\n";
