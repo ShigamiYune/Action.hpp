@@ -147,5 +147,3 @@ int main() {
 | operator-= / key   |
 +-------------------+
 ```
-
-Bạn có muốn mình làm luôn không?
