@@ -26,7 +26,7 @@ Cho phép bạn đăng ký các callback (member function, const member, global/
 * `action::action<Signature>` — container chứa các callback.
 * `action::make_callback<&Class::func>(object)` — tạo callback từ member/const member function.
 * `action::make_callback<&GlobalFunc>()` — tạo callback từ global/static function.
-* `action::make_callback<KEY>(lambda)` — tạo callback lambda(có capture và không capture), cần key duy nhất để xóa sau này.
+* `action::make_callback<KEY>(lambda)` — tạo callback lambda (có capture và không capture), cần key duy nhất để xóa sau này.
 * `action::get_key_callback<&Class::func>(object)` — lấy key để xóa callback.
 * `action::get_key_callback<&GlobalFunc>()` — lấy key để xóa callback.
 * `action::get_key_callback<KEY>()` — lấy key để xóa callback.
@@ -101,11 +101,21 @@ int main() {
 
 1. **Key cho lambda**
 
-   * Mỗi lambda có capture cần **một key duy nhất** để xóa callback sau này.
+   * Mỗi lambda (có capture và không capture) cần **một key duy nhất** để xóa callback sau này.
 
 2. **Member function overload**
 
    * Template không tự phân biệt overload; nếu có overload, cần **cast rõ ràng** hoặc đổi tên function.
+   * Ví dụ
+```
+struct MyClass {
+    void member(int x) { std::cout << "Member: " << x << "\n"; }
+    void member(ullong _double) { std::cout << "Member: " << _double << "\n"; }
+}
+
+// phải cast khi tạo callback
+onEvent += action::make_callback<static_cast<void (MyClass::*)(int)>(&MyClass::member)>(&obj);
+```
 
 3. **Thread-safety**
 
