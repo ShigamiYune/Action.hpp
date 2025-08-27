@@ -6,7 +6,7 @@
 |-----------------------|------------------------------------|
 | hàm thành viên        | 24 bytes (16 heap + 8 ptr in Action)   |
 | hàm thành viên hoặc hàm toàn cục | 16 bytes (8 heap + 8 ptr in Action)    |
-| hàm lambda  | 16(8 heap + 8 ptr in Action) + size of lambda (aligned)      |
+| hàm lambda  | 16 (8 heap + 8 ptr in Action) + size of lambda (aligned)      |
 
 ---
 
