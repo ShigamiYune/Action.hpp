@@ -22,16 +22,14 @@
 
 ## Public API
 
-* `action::action<Signature>` — container for callbacks.
-* `action::make_callback<&Class::func>(object)` — create a member/const member callback.
-* `action::make_callback<&GlobalFunc>()` — create a global/static function callback.
-* `action::make_callback<KEY>(lambda)` — create a lambda callback (with capture and without capture), need unique key for later deletion.
-* `action::get_key_callback<&Class::func>(object)` — get the key to delete the callback.
-* `action::get_key_callback<&GlobalFunc>()` — get the key to delete the callback.
-* `action::get_key_callback<KEY>()` — get the key to delete the callback.
-* `operator+=` — add a callback.
-* `operator-=` — remove a callback by key.
-* `invoke(args...)` — call all registered callbacks.
+* `action::action<Signature>` — a container holding callbacks.
+* `action::action<Signature>::push_back<&Class::func>(object)` — add a callback from a member or const member function.
+* `action::action<Signature>::push_back<&GlobalFunc>()` — add a callback from a global or static function.
+* `action::action<Signature>::push_back<KEY>(lambda)` — add a callback (with or without capture); requires a unique key to remove it later.
+* `action::action<Signature>::erase<&Class::func>(object)` — remove a callback from a member or const member function.
+* `action::action<Signature>::erase<&GlobalFunc>()` — remove a global or static function callback.
+* `action::action<Signature>::erase<KEY>()` — remove a callback using its key.
+* `invoke(args...)` — execute all registered callbacks.
 
 ---
 
