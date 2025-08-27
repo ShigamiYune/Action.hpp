@@ -76,18 +76,18 @@ public:
 
 int main() {
     // Define an Action taking two ints and returning int
-    Action<int(int,int)> action;
+    action::action<int(int,int)> action;
 
     MyClass obj;
 
     // 1. Global function handler
-    action += CALLBACK_GLOBAL(global_add, global_add, int, (int, int));
+    action += make_callback<&global_add>();
 
     // 2. Static member function handler
-    action += CALLBACK_STATIC_MEMBER(Math, multiply, Math::multiply, int, (int, int));
+    action += make_callback<&Math::multiply>();
 
     // 3. Member function handler
-    action += CALLBACK_MEMBER(MyClass, accumulate, &obj, int, (int, int));
+    action += make_callback<&MyClass::accumulate>(&obj);
 
     // 4. Lambda handler capture
     auto lambda = [](int x, int y) {
@@ -95,20 +95,20 @@ int main() {
         std::cout << "lambda: " << x << " - " << y << " = " << result << std::endl;
         return result;
     };
-    action += CALLBACK_LAMBDA_LOCAL(lambda, int, (int, int));
+    // need a key
+    action += make_callback<0>(lambda);
 
     std::cout << "-- Invoking all handlers --" << std::endl;
-    int final_result = action.invoke(5, 3);
+
+    int final_result = action && action.invoke(5, 3);
+
     std::cout << "Final (last) result: " << final_result << std::endl;
 
-    std::cout << "-- Invoke specific handler by key --" << std::endl;
-    // Invoke only the accumulate member function
-    int acc_result = action.invoke_with_key(GET_KEY_CALLBACK_MEMBER(MyClass, accumulate, &obj), 2, 4);
-    std::cout << "Accumulate result: " << acc_result << std::endl;
-
     std::cout << "-- Removing global_add handler --" << std::endl;
-    action -= GET_KEY_CALLBACK_GLOBAL(global_add, global_add);
-    action.invoke(7, 2);
+
+    action -= get_key_callback<&global_add>();
+
+    action && action.invoke(7, 2);
 
     std::cout << "-- Clearing all handlers --" << std::endl;
     action.clear();
