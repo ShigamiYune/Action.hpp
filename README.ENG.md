@@ -106,7 +106,7 @@ int main() {
 
    * Template cannot automatically resolve overloads; use explicit cast if needed.
    * Example
-```
+``` cpp
 struct MyClass {
     void member(int x) { std::cout << "Member: " << x << "\n"; }
     void member(ullong _double) { std::cout << "Member: " << _double << "\n"; }
