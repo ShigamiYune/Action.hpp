@@ -396,6 +396,11 @@ namespace action{
             }
             return callbacks[callbacks.size() - 1]->invoke(args...);
         }
+
+        template <typename T>
+        constexpr auto pick(RETURN (T::*func)(ARGS...)) -> decltype(func) {
+            return func;
+        }
     };
 
     template<typename... ARGS> 
@@ -445,6 +450,11 @@ namespace action{
             for (std::size_t i = 0; i < callbacks.size(); ++i) {
                 callbacks[i]->invoke(args...);
             }
+        }
+
+        template <typename T>
+        constexpr auto pick(void (T::*func)(ARGS...)) -> decltype(func) {
+            return func;
         }
     };
 }
