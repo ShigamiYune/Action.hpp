@@ -16,7 +16,7 @@
 | ---------------------- | -------------------------------------------------------- |
 | Member Function        | 24 bytes (16 heap + 8 ptr in action::action)                     |
 | Static/Global Function | 16 bytes (8 heap + 8 ptr in action::action)                      |
-| Lambda (with capture)  | 16 (8 heap + 8 ptr in action::action) + size of lambda (aligned) |
+| Lambda (with or without capture)  | 16 (8 heap + 8 ptr in action::action) + size of lambda (aligned) |
 
 ---
 
