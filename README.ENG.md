@@ -23,10 +23,10 @@
 ## Public API
 
 * `action::action<Signature>` — a container holding callbacks.
-* `action::action<Signature>::push_back<&Class::func>(object)` — add a callback from a member or const member function.
+* `action::action<Signature>::push_back<Class, &Class::func>(object)` — add a callback from a member or const member function.
 * `action::action<Signature>::push_back<&GlobalFunc>()` — add a callback from a global or static function.
 * `action::action<Signature>::push_back<KEY>(lambda)` — add a callback (with or without capture); requires a unique key to remove it later.
-* `action::action<Signature>::erase<&Class::func>(object)` — remove a callback from a member or const member function.
+* `action::action<Signature>::erase<Class, &Class::func>(object)` — remove a callback from a member or const member function.
 * `action::action<Signature>::erase<&GlobalFunc>()` — remove a global or static function callback.
 * `action::action<Signature>::erase<KEY>()` — remove a callback using its key.
 * `invoke(args...)` — execute all registered callbacks.
