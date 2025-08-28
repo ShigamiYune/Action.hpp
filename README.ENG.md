@@ -132,32 +132,3 @@ onEvent.push_back<onEvent.pick(&MyClass::member)>(&obj);
 5. **Multiple arguments**
 
    * `action` supports any signature, e.g., `void(int, double)` or `int(std::string, float)`.
-
----
-
-## Callback Lifecycle (Flow)
-
-```
-+-------------------+
-| Create Callback    |
-| make_callback()    |
-+-------------------+
-          |
-          v
-+-------------------+
-| Add to Action      |
-| operator+=         |
-+-------------------+
-          |
-          v
-+-------------------+
-| Invoke All         |
-| invoke(args...)    |
-+-------------------+
-          |
-          v
-+-------------------+
-| Remove Callback    |
-| operator-= / key   |
-+-------------------+
-```
