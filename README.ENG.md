@@ -41,7 +41,7 @@
 
 struct MyClass {
     void member(int x) { std::cout << "Member: " << x << "\n"; }
-    void member(ullong _double) { std::cout << "Member: " << _double << "\n"; }
+    void member(unsigned long long _double) { std::cout << "Member: " << _double << "\n"; }
 
     void member_const(int x) const { std::cout << "Const Member: " << x << "\n"; }
     static void _static(int x) { std::cout << "Static: " << x << "\n"; }
@@ -56,10 +56,10 @@ int main() {
     action::action<int(int)> onEventReturn;
 
     // Add member callback
-    onEvent.push_back<&MyClass::member>(&obj);
+    onEvent.push_back<MyClass, &MyClass::member>(&obj);
 
     // Add const member callback
-    onEvent.push_back<&MyClass::member_const>(&const_obj);
+    onEvent.push_back<MyClass, &MyClass::member_const>(&const_obj);
 
     // Add static/global callbacks
     onEvent.push_back<&MyClass::_static>();
@@ -78,19 +78,19 @@ int main() {
     onEventReturn.push_back<24>(global_return);
 
     // Invoke all callbacks
-    std::cout << "Invoke all callbacks:\n";
+    std::cout << "Invoking all callbacks:\n";
     onEvent.invoke(10);
 
-    // Invoke callbacks with return value
-    std::cout << "\nInvoke callback with return value:\n";
+    // Invoke callback with return value
+    std::cout << "\nInvoking return-value callback:\n";
     int ret = onEventReturn.invoke(10);
     std::cout << "Returned value: " << ret << "\n";
 
-    // Remove callback by key
-    onEvent.erase(&MyClass::member, &obj);
+    // Remove callbacks by key
+    onEvent.erase<MyClass, &MyClass::member>(&obj);
     onEvent.erase<42>();
 
-    std::cout << "\nInvoke after removing some callbacks:\n";
+    std::cout << "\nInvoking after removing some callbacks:\n";
     onEvent.invoke(20);
 
     return 0;
@@ -105,30 +105,14 @@ int main() {
 
    * Every lambda (with capture and without capture) must have a unique key (`uintptr_t`) for removal.
 
-2. **Overloaded member functions**
-
-   * Template cannot automatically resolve overloads; use explicit **pick** if needed.
-   * Example
-``` cpp
-struct MyClass {
-    void member(int x) { std::cout << "Member: " << x << "\n"; }
-    void member(ullong _double) { std::cout << "Member: " << _double << "\n"; }
-}
-
-action::action<void(int)> onEvent;
-
-// must pick when add callback
-onEvent.push_back<onEvent.pick(&MyClass::member)>(&obj);
-```
-
-3. **Thread-safety**
+2. **Thread-safety**
 
    * `action::action` is **not thread-safe**. Protect with a mutex if accessed from multiple threads.
 
-4. **Return value behavior**
+3. **Return value behavior**
 
    * For non-void `action`, `invoke` returns the value of the **last callback**; all previous callbacks are invoked but their return values are discarded.
 
-5. **Multiple arguments**
+4. **Multiple arguments**
 
    * `action` supports any signature, e.g., `void(int, double)` or `int(std::string, float)`.
