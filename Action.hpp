@@ -292,13 +292,6 @@ namespace action{
             }
         };
     }
-    template<auto FUNC, typename WRAP, 
-        typename = std::enable_if_t<check::check_function<decltype(FUNC)>::type == 0>>
-    auto make_callback(WRAP object) {
-        using sig = unpack::unpack<decltype(FUNC)>::signature;
-        using cb_t = callback::callback<FUNC, sig>;
-        return std::make_unique<cb_t>(object);
-    }
 
     template<typename SIGNATURE> class action;
     template<typename RETURN, typename... ARGS> 
