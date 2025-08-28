@@ -133,32 +133,3 @@ onEvent.push_back<onEvent.pick(&MyClass::member)>(&obj);
 5. **Hỗ trợ nhiều tham số**
 
    * `action` hỗ trợ bất kỳ signature nào, ví dụ `void(int, double)` hoặc `int(std::string, float)`.
-
----
-
-## Flow lifecycle của callback
-
-```
-+-------------------+
-| Tạo Callback       |
-| make_callback()    |
-+-------------------+
-          |
-          v
-+-------------------+
-| Thêm vào Action    |
-| operator+=         |
-+-------------------+
-          |
-          v
-+-------------------+
-| Thực thi Callback  |
-| invoke(args...)    |
-+-------------------+
-          |
-          v
-+-------------------+
-| Xóa Callback       |
-| operator-= / key   |
-+-------------------+
-```
