@@ -57,10 +57,10 @@ int main() {
     action::action<int(int)> onEventReturn;
 
     // Thêm member callback
-    onEvent.push_back<onEvent.pick(&MyClass::member)>(&obj);
+    onEvent.push_back<MyClass, &MyClass::member>(&obj);
 
     // Thêm const member callback
-    onEvent.push_back<&MyClass::member_const>(&const_obj);
+    onEvent.push_back<MyClass, &MyClass::member_const>(&const_obj);
 
     // Thêm static/global callbacks
     onEvent.push_back<&MyClass::_static>();
@@ -88,7 +88,7 @@ int main() {
     std::cout << "Giá trị trả về: " << ret << "\n";
 
     // Xóa callback bằng key
-    onEvent.erase(&MyClass::member, &obj);
+    onEvent.erase<MyClass, &MyClass::member>(&obj);
     onEvent.erase<42>();
 
     std::cout << "\nThực thi sau khi xóa một số callback:\n";
@@ -106,30 +106,14 @@ int main() {
 
    * Mỗi lambda (có capture và không capture) cần **một key duy nhất** để xóa callback sau này.
 
-2. **Member function overload**
-
-   * Template không tự phân biệt overload; nếu có overload, cần **pick** hoặc đổi tên function.
-   * Ví dụ
-``` cpp
-struct MyClass {
-    void member(int x) { std::cout << "Member: " << x << "\n"; }
-    void member(ullong _double) { std::cout << "Member: " << _double << "\n"; }
-}
-
-action::action<void(int)> onEvent;
-
-// phải pick khi thêm callback
-onEvent.push_back<onEvent.pick(&MyClass::member)>(&obj);
-```
-
-3. **Thread-safety**
+2. **Thread-safety**
 
    * `action::action` **không thread-safe**. Nếu dùng trong multi-thread, cần bảo vệ bằng mutex.
 
-4. **Hành vi trả về của callback**
+3. **Hành vi trả về của callback**
 
    * Với `action` trả về giá trị, `invoke` trả **giá trị của callback cuối cùng**, các callback trước vẫn được gọi nhưng kết quả bị bỏ qua.
 
-5. **Hỗ trợ nhiều tham số**
+4. **Hỗ trợ nhiều tham số**
 
    * `action` hỗ trợ bất kỳ signature nào, ví dụ `void(int, double)` hoặc `int(std::string, float)`.
