@@ -293,6 +293,7 @@ namespace action{
         };
     }
 
+    // ---- action -------------------------------------------------------
     template<typename SIGNATURE> class action;
     template<typename RETURN, typename... ARGS> 
     class action<RETURN(ARGS...)> {
@@ -312,27 +313,33 @@ namespace action{
         }
 
         // member
-        template<auto FUNC, typename T>
-        void push_back(T* object) {
+        template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...)>
+        void push_back(CLASS* object) {
             using cb_t = callback::callback<FUNC, RETURN(ARGS...)>;
             callbacks.push_back(std::make_unique<cb_t>(object));
         }
+        // member
+        template<typename CLASS, RETURN(CLASS::*func)(ARGS...) const>
+        void push_back(const CLASS* object) {
+            using cb_t = callback::callback<func, RETURN(ARGS...)>;
+            callbacks.push_back(std::make_unique<cb_t>(object));
+        }
         // global
-        template<auto FUNC>
+        template<RETURN(*func)(ARGS...)>
         void push_back() {
-            using cb_t = callback::callback<FUNC, RETURN(ARGS...)>;
+            using cb_t = callback::callback<func, RETURN(ARGS...)>;
             callbacks.push_back(std::make_unique<cb_t>());
         }
         // lambda
-        template<std::uintptr_t key, typename FUNC>
-        void push_back(FUNC f) {
-            using cb_t = callback::lambda_callback<FUNC, RETURN(ARGS...), key>;
+        template<std::uintptr_t key, typename func>
+        void push_back(func f) {
+            using cb_t = callback::lambda_callback<func, RETURN(ARGS...), key>;
             callbacks.push_back(std::make_unique<cb_t>(std::move(f)));
         }
 
         // member
-        template <typename T>
-        void erase(RETURN (T::*func)(ARGS...), const T* object) {
+        template <typename T, RETURN (T::*func)(ARGS...)>
+        void erase(const T* object) {
             auto key = callback::d_key_callback_member<decltype(func)>(
                 reinterpret_cast<std::uintptr_t>(object),
                 func
@@ -345,7 +352,8 @@ namespace action{
             }
         }
         // global
-        void erase(RETURN (*func)(ARGS...)) {
+        template <RETURN (*func)(ARGS...)>
+        void erase() {
             auto key = callback::key_callback_global<RETURN(ARGS...)>(func);
 
             for (std::size_t i = 0; i < callbacks.size(); ++i) {
@@ -366,8 +374,6 @@ namespace action{
                 }
             }
         }
-
-        template <typename T> constexpr auto pick(RETURN (T::*func)(ARGS...)) -> decltype(func) { return func; }
     };
 
     template<typename... ARGS> 
@@ -387,27 +393,33 @@ namespace action{
         }
 
         // member
-        template<auto FUNC, typename T>
-        void push_back(T* object) {
+        template<typename CLASS, void(CLASS::*FUNC)(ARGS...)>
+        void push_back(CLASS* object) {
             using cb_t = callback::callback<FUNC, void(ARGS...)>;
             callbacks.push_back(std::make_unique<cb_t>(object));
         }
+        // member
+        template<typename CLASS, void(CLASS::*func)(ARGS...) const>
+        void push_back(const CLASS* object) {
+            using cb_t = callback::callback<func, void(ARGS...)>;
+            callbacks.push_back(std::make_unique<cb_t>(object));
+        }
         // global
-        template<auto FUNC>
+        template<void(*func)(ARGS...)>
         void push_back() {
-            using cb_t = callback::callback<FUNC, void(ARGS...)>;
+            using cb_t = callback::callback<func, void(ARGS...)>;
             callbacks.push_back(std::make_unique<cb_t>());
         }
         // lambda
-        template<std::uintptr_t key, typename FUNC>
-        void push_back(FUNC f) {
-            using cb_t = callback::lambda_callback<FUNC, void(ARGS...), key>;
+        template<std::uintptr_t key, typename func>
+        void push_back(func f) {
+            using cb_t = callback::lambda_callback<func, void(ARGS...), key>;
             callbacks.push_back(std::make_unique<cb_t>(std::move(f)));
         }
 
         // member
-        template <typename T>
-        void erase(void (T::*func)(ARGS...), const T* object) {
+        template <typename T, void (T::*func)(ARGS...)>
+        void erase(const T* object) {
             auto key = callback::d_key_callback_member<decltype(func)>(
                 reinterpret_cast<std::uintptr_t>(object),
                 func
@@ -420,7 +432,8 @@ namespace action{
             }
         }
         // global
-        void erase(void (*func)(ARGS...)) {
+        template <void (*func)(ARGS...)>
+        void erase() {
             auto key = callback::key_callback_global<void(ARGS...)>(func);
 
             for (std::size_t i = 0; i < callbacks.size(); ++i) {
@@ -441,8 +454,6 @@ namespace action{
                 }
             }
         }
-
-        template <typename T> constexpr auto pick(void (T::*func)(ARGS...)) -> decltype(func) { return func; }
     };
 }
 
