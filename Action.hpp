@@ -33,9 +33,9 @@ namespace action {
 
         namespace key {
             enum type_key : std::uint8_t{
-                member, 
-                global,
-                lambda
+                member = 167, 
+                global = 241,
+                lambda = 110
             };
 
             class key_member_base {
@@ -107,7 +107,7 @@ namespace action {
         class callback_member<CLASS, RETURN(ARGS...), FUNC> : public base::object_callback<RETURN(ARGS...)>{
             CLASS _object;
         public: 
-            callback_member(const CLASS& object) : _object(std::copy(object)) {}
+            callback_member(const CLASS& object) : _object(object) {}
             callback_member(CLASS&& object) : _object(std::move(object)) {}
 
             RETURN invoke(ARGS... args) override {
@@ -178,7 +178,7 @@ namespace action {
             : public base::object_callback<RETURN(ARGS...)>{
             std::shared_ptr<CLASS> _wrap;
         public: 
-            callback_wrap(const std::shared_ptr<CLASS>& wrap) : _wrap(std::copy(wrap)) {}
+            callback_wrap(const std::shared_ptr<CLASS>& wrap) : _wrap(wrap) {}
             callback_wrap(std::shared_ptr<CLASS>&& wrap) : _wrap(std::move(wrap)) {}
 
             RETURN invoke(ARGS... args) override { 
@@ -201,10 +201,10 @@ namespace action {
         template<typename CLASS, auto FUNC, typename RETURN, typename... ARGS>
         class callback_wrap<CLASS, RETURN(ARGS...), FUNC, std::weak_ptr<CLASS>>
             : public base::object_callback<RETURN(ARGS...)>{
-            std::shared_ptr<CLASS> _wrap;
+            std::weak_ptr<CLASS> _wrap;
         public: 
-            callback_wrap(const std::shared_ptr<CLASS>& wrap) : _wrap(std::copy(wrap)) {}
-            callback_wrap(std::shared_ptr<CLASS>&& wrap) : _wrap(std::move(wrap)) {}
+            callback_wrap(const std::weak_ptr<CLASS>& wrap) : _wrap(wrap) {}
+            callback_wrap(std::weak_ptr<CLASS>&& wrap) : _wrap(std::move(wrap)) {}
 
             RETURN invoke(ARGS... args) override {
                 auto sp = _wrap.lock();
