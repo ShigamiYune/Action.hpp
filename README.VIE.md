@@ -37,32 +37,42 @@ Cho phép bạn đăng ký các callback (member function, const member, global/
 ## Ví dụ sử dụng
 
 ```cpp
-#include "Action.hpp"
+#include "ActionRemake.hpp"
 #include <iostream>
 
 struct MyClass {
-    void member(int x) { std::cout << "Member: " << x << "\n"; }
-    void member(ullong _double) { std::cout << "Member: " << _double << "\n"; }
+    void member(int x) { std::cout << "Thành viên: " << x << "\n"; }
+    void member(unsigned long long _double) { std::cout << "Thành viên: " << _double << "\n"; }
 
-    void member_const(int x) const { std::cout << "Const Member: " << x << "\n"; }
-    static void _static(int x) { std::cout << "Static: " << x << "\n"; }
+    void member_const(int x) const { std::cout << "Thành viên const: " << x << "\n"; }
+    static void _static(int x) { std::cout << "Hàm static: " << x << "\n"; }
+
+    void shared_callback(int x) { std::cout << "shared_ptr: " << x << "\n"; }
+    void weak_callback(int x) { std::cout << "weak_ptr: " << x << "\n"; }
+
+    void object_callback(int x) { std::cout << "callback từ object: " << x << "\n"; }
 };
 
-void global(int x) { std::cout << "Global: " << x << "\n"; }
+// Hàm global
+void global(int x) { std::cout << "Hàm global: " << x << "\n"; }
 
 int main() {
     MyClass obj;
     const MyClass const_obj;
-    action::action<void(int)> onEvent;
-    action::action<int(int)> onEventReturn;
+    action::action<void(int)> onEvent;         // sự kiện không trả về
+    action::action<int(int)> onEventReturn;    // sự kiện trả về giá trị int
 
-    // Thêm member callback
+    // Tạo callback trực tiếp từ object
+    auto my_callback = 
+        action::object_callback<void(int)>::make_unique<MyClass, &MyClass::object_callback>(&obj);
+
+    // Thêm callback từ member function
     onEvent.push_back<MyClass, &MyClass::member>(&obj);
 
-    // Thêm const member callback
+    // Thêm callback từ const member function
     onEvent.push_back<MyClass, &MyClass::member_const>(&const_obj);
 
-    // Thêm static/global callbacks
+    // Thêm callback từ static / global function
     onEvent.push_back<&MyClass::_static>();
     onEvent.push_back<&global>();
 
@@ -78,22 +88,33 @@ int main() {
     };
     onEventReturn.push_back<24>(global_return);
 
-    // Thực thi tất cả callback
-    std::cout << "Thực thi tất cả callback:\n";
+    // Gọi tất cả callback
+    std::cout << "Gọi tất cả callback:\n";
     onEvent.invoke(10);
 
-    // Thực thi callback trả về
-    std::cout << "\nThực thi callback trả về:\n";
+    // Gọi callback trả về giá trị
+    std::cout << "\nGọi callback có giá trị trả về:\n";
     int ret = onEventReturn.invoke(10);
     std::cout << "Giá trị trả về: " << ret << "\n";
 
-    // Xóa callback bằng key
+    // Thêm callback dùng shared_ptr
+    auto sp_obj = std::make_shared<MyClass>();
+    onEvent.push_back<MyClass, &MyClass::shared_callback>(sp_obj);
+
+    // Thêm callback dùng weak_ptr
+    std::weak_ptr<MyClass> wp_obj = sp_obj;
+    onEvent.push_back<MyClass, &MyClass::weak_callback>(wp_obj);
+
+    // Xóa các callback theo key
     onEvent.erase<MyClass, &MyClass::member>(&obj);
     onEvent.erase<42>();
 
-    std::cout << "\nThực thi sau khi xóa một số callback:\n";
+    std::cout << "\nGọi sau khi xóa một số callback:\n";
     onEvent.invoke(20);
 
+    // Gọi callback trực tiếp từ object
+    my_callback->invoke(30);
+    
     return 0;
 }
 ```
