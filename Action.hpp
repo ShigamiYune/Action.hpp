@@ -2080,7 +2080,7 @@ namespace action {
         template<typename KEY_T, KEY_T key, typename FUNC_T>
         static object_type make_unique(FUNC_T&& func) {
             using cb_t = callback::callback_lambda<typename std::decay<FUNC_T>::type, RETURN(ARGS...),KEY_T, key>;
-            return std::move(std::unique_ptr<cb_t>(new cb_t(std::forward<typename std::decay<FUNC_T>::type>(func))));
+            return std::move(std::unique_ptr<cb_t>(new cb_t(std::forward<FUNC_T>(func))));
         }
     };
 
