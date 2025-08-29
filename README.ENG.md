@@ -6,7 +6,7 @@
 
 ---
 
-## Required : C++ 17
+## Required : C++ 11
 
 ---
 
