@@ -29,6 +29,7 @@
 * `action::action<Signature>::erase<Class, &Class::func>(object)` — remove a callback from a member or const member function.
 * `action::action<Signature>::erase<&GlobalFunc>()` — remove a global or static function callback.
 * `action::action<Signature>::erase<KEY>()` — remove a callback using its key.
+* `action::object_callbaclk<Signature>::make_unique<...>()` — make a callback object
 * `invoke(args...)` — execute all registered callbacks.
 
 ---
