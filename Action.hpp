@@ -63,8 +63,10 @@ namespace action {
             template<typename RETURN, typename... ARGS>
             class key_global<RETURN(ARGS...)> {
             public:
-                RETURN(*func_ptr)(ARGS...);
-                key_global(RETURN(*func)(ARGS...)) : func_ptr(func) {}
+                RETURN(*func_ptr)(ARGS...) = nullptr;
+                RETURN(*func_ptr_noexcept)(ARGS...) noexcept = nullptr;
+                key_global(RETURN(*func)(ARGS...) = nullptr, RETURN(*func_noexcept)(ARGS...) noexcept = nullptr) : 
+                    func_ptr(func), func_ptr_noexcept(func_noexcept) {}
             };
 
             class key_lambda_base { 
@@ -701,9 +703,9 @@ namespace action {
             erase_member<CLASS, FUNC>(std::forward<WRAP>(object));
         }
         // global
-        template <RETURN (*FUNC)(ARGS...)>
+        template <RETURN(*FUNC)(ARGS...)>
         void erase() {
-            auto key = callback::key::key_global<RETURN(ARGS...)>(FUNC);
+            auto key = callback::key::key_global<RETURN(ARGS...)>(FUNC, nullptr);
 
             for (std::size_t i = 0; i < callbacks.size(); ++i) {
                 if(callbacks[i]->compare(callback::key::global, &key)) {
@@ -712,9 +714,9 @@ namespace action {
                 }
             }
         }
-        template <RETURN (*FUNC)(ARGS...) noexcept>
+        template <RETURN(*FUNC)(ARGS...) noexcept>
         void erase() {
-            auto key = callback::key::key_global<RETURN(ARGS...)>(FUNC);
+            auto key = callback::key::key_global<RETURN(ARGS...)>(nullptr, FUNC);
 
             for (std::size_t i = 0; i < callbacks.size(); ++i) {
                 if(callbacks[i]->compare(callback::key::global, &key)) {
@@ -724,7 +726,7 @@ namespace action {
             }
         }
         // lambda
-        template <auto KEY>
+        template <auto KEY, typename = typename std::enable_if<std::is_member_function_pointer<decltype(KEY)>::value>::type>
         void erase() {
             auto key = callback::key::key_lambda<KEY>();
             for (std::size_t i = 0; i < callbacks.size(); ++i) {
@@ -735,7 +737,15 @@ namespace action {
             }
         }
         template <typename KEY_T, KEY_T _key>
-        void erase() { erase<_key>(); }
+        void erase() { 
+            auto key = callback::key::key_lambda<_key>();
+            for (std::size_t i = 0; i < callbacks.size(); ++i) {
+                if(callbacks[i]->compare(callback::key::lambda, &key)) {
+                    callbacks.erase(callbacks.begin() + i);
+                    return;
+                }
+            }
+        }
     };
 #elif __cplusplus >= 201103L
     namespace callback {
