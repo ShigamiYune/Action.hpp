@@ -401,7 +401,7 @@ namespace action {
             else if constexpr (std::is_same_v<callback::remove_all_t<WRAP>, std::weak_ptr<CLASS>> 
                 || std::is_same_v<callback::remove_all_t<WRAP>, std::shared_ptr<CLASS>>) {
                 using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), FUNC, callback::remove_all_t<WRAP>>;
-                callbacks.push_back(std::make_unique<cb_t>(std::forward<callback::remove_all_t<WRAP>>(object)));
+                callbacks.push_back(std::make_unique<cb_t>(std::forward<WRAP>(object)));
             }
             else {
                 static_assert(false, "object error: you can be change to use lambda");
@@ -1929,73 +1929,146 @@ namespace action {
                 typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::shared_ptr<CLASS>>::value, int>::type = 0>
         static object_type make_unique(WRAP&& object) { 
             using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::shared_ptr<CLASS>>;
-            return std::move(std::unique_ptr<cb_t>(new cb_t(std::forward<std::shared_ptr<CLASS>>(object))));
+            return std::move(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
         }
         template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...) const, typename WRAP,
                 typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::shared_ptr<CLASS>>::value, int>::type = 0>
         static object_type make_unique(WRAP&& object) { 
             using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::shared_ptr<CLASS>>;
-            return std::move(std::unique_ptr<cb_t>(new cb_t(std::forward<std::shared_ptr<CLASS>>(object))));
+            return std::move(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
         }
         template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...) volatile, typename WRAP,
                 typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::shared_ptr<CLASS>>::value, int>::type = 0>
         static object_type make_unique(WRAP&& object) { 
             using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::shared_ptr<CLASS>>;
-            return std::move(std::unique_ptr<cb_t>(new cb_t(std::forward<std::shared_ptr<CLASS>>(object))));
+            return std::move(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
         }
         template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...) const volatile, typename WRAP,
                 typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::shared_ptr<CLASS>>::value, int>::type = 0>
         static object_type make_unique(WRAP&& object) { 
             using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::shared_ptr<CLASS>>;
-            return std::move(std::unique_ptr<cb_t>(new cb_t(std::forward<std::shared_ptr<CLASS>>(object))));
+            return std::move(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
         }
         template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...) &, typename WRAP,
                 typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::shared_ptr<CLASS>>::value, int>::type = 0>
         static object_type make_unique(WRAP&& object) { 
             using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::shared_ptr<CLASS>>;
-            return std::move(std::unique_ptr<cb_t>(new cb_t(std::forward<std::shared_ptr<CLASS>>(object))));
+            return std::move(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
         }
         template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...) const &, typename WRAP,
                 typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::shared_ptr<CLASS>>::value, int>::type = 0>
         static object_type make_unique(WRAP&& object) { 
             using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::shared_ptr<CLASS>>;
-            return std::move(std::unique_ptr<cb_t>(new cb_t(std::forward<std::shared_ptr<CLASS>>(object))));
+            return std::move(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
         }
         template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...) volatile &, typename WRAP,
                 typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::shared_ptr<CLASS>>::value, int>::type = 0>
         static object_type make_unique(WRAP&& object) { 
             using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::shared_ptr<CLASS>>;
-            return std::move(std::unique_ptr<cb_t>(new cb_t(std::forward<std::shared_ptr<CLASS>>(object))));
+            return std::move(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
         }
         template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...) const volatile &, typename WRAP,
                 typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::shared_ptr<CLASS>>::value, int>::type = 0>
         static object_type make_unique(WRAP&& object) { 
             using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::shared_ptr<CLASS>>;
-            return std::move(std::unique_ptr<cb_t>(new cb_t(std::forward<std::shared_ptr<CLASS>>(object))));
+            return std::move(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
         }
         template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...) &&, typename WRAP,
                 typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::shared_ptr<CLASS>>::value, int>::type = 0>
         static object_type make_unique(WRAP&& object) { 
             using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::shared_ptr<CLASS>>;
-            return std::move(std::unique_ptr<cb_t>(new cb_t(std::forward<std::shared_ptr<CLASS>>(object))));
+            return std::move(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
         }
         template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...) const &&, typename WRAP,
                 typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::shared_ptr<CLASS>>::value, int>::type = 0>
         static object_type make_unique(WRAP&& object) { 
             using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::shared_ptr<CLASS>>;
-            return std::move(std::unique_ptr<cb_t>(new cb_t(std::forward<std::shared_ptr<CLASS>>(object))));
+            return std::move(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
         }
         template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...) volatile &&, typename WRAP,
                 typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::shared_ptr<CLASS>>::value, int>::type = 0>
         static object_type make_unique(WRAP&& object) { 
             using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::shared_ptr<CLASS>>;
-            return std::move(std::unique_ptr<cb_t>(new cb_t(std::forward<std::shared_ptr<CLASS>>(object))));
+            return std::move(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
         }
         template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...) const volatile &&, typename WRAP,
                 typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::shared_ptr<CLASS>>::value, int>::type = 0>
         static object_type make_unique(WRAP&& object) { 
             using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::shared_ptr<CLASS>>;
-            return std::move(std::unique_ptr<cb_t>(new cb_t(std::forward<std::shared_ptr<CLASS>>(object))));
+            return std::move(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
+        }
+        
+        template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...), typename WRAP,
+                typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::weak_ptr<CLASS>>::value, int>::type = 0>
+        static object_type make_unique(WRAP&& object) { 
+            using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::weak_ptr<CLASS>>;
+            return std::move(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
+        }
+        template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...) const, typename WRAP,
+                typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::weak_ptr<CLASS>>::value, int>::type = 0>
+        static object_type make_unique(WRAP&& object) { 
+            using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::weak_ptr<CLASS>>;
+            return std::move(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
+        }
+        template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...) volatile, typename WRAP,
+                typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::weak_ptr<CLASS>>::value, int>::type = 0>
+        static object_type make_unique(WRAP&& object) { 
+            using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::weak_ptr<CLASS>>;
+            return std::move(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
+        }
+        template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...) const volatile, typename WRAP,
+                typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::weak_ptr<CLASS>>::value, int>::type = 0>
+        static object_type make_unique(WRAP&& object) { 
+            using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::weak_ptr<CLASS>>;
+            return std::move(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
+        }
+        template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...) &, typename WRAP,
+                typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::weak_ptr<CLASS>>::value, int>::type = 0>
+        static object_type make_unique(WRAP&& object) { 
+            using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::weak_ptr<CLASS>>;
+            return std::move(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
+        }
+        template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...) const &, typename WRAP,
+                typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::weak_ptr<CLASS>>::value, int>::type = 0>
+        static object_type make_unique(WRAP&& object) { 
+            using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::weak_ptr<CLASS>>;
+            return std::move(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
+        }
+        template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...) volatile &, typename WRAP,
+                typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::weak_ptr<CLASS>>::value, int>::type = 0>
+        static object_type make_unique(WRAP&& object) { 
+            using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::weak_ptr<CLASS>>;
+            return std::move(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
+        }
+        template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...) const volatile &, typename WRAP,
+                typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::weak_ptr<CLASS>>::value, int>::type = 0>
+        static object_type make_unique(WRAP&& object) { 
+            using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::weak_ptr<CLASS>>;
+            return std::move(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
+        }
+        template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...) &&, typename WRAP,
+                typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::weak_ptr<CLASS>>::value, int>::type = 0>
+        static object_type make_unique(WRAP&& object) { 
+            using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::weak_ptr<CLASS>>;
+            return std::move(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
+        }
+        template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...) const &&, typename WRAP,
+                typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::weak_ptr<CLASS>>::value, int>::type = 0>
+        static object_type make_unique(WRAP&& object) { 
+            using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::weak_ptr<CLASS>>;
+            return std::move(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
+        }
+        template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...) volatile &&, typename WRAP,
+                typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::weak_ptr<CLASS>>::value, int>::type = 0>
+        static object_type make_unique(WRAP&& object) { 
+            using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::weak_ptr<CLASS>>;
+            return std::move(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
+        }
+        template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...) const volatile &&, typename WRAP,
+                typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::weak_ptr<CLASS>>::value, int>::type = 0>
+        static object_type make_unique(WRAP&& object) { 
+            using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::weak_ptr<CLASS>>;
+            return std::move(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
         }
         
         template<RETURN(*FUNC)(ARGS...)>
@@ -2128,146 +2201,146 @@ namespace action {
                 typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::shared_ptr<CLASS>>::value, int>::type = 0>
             void push_back(WRAP&& object) { 
                 using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::shared_ptr<CLASS>>;
-                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<std::shared_ptr<CLASS>>(object))));
+                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
             }
             template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...) const, typename WRAP,
                 typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::shared_ptr<CLASS>>::value, int>::type = 0>
             void push_back(WRAP&& object) { 
                 using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::shared_ptr<CLASS>>;
-                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<std::shared_ptr<CLASS>>(object))));
+                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
             }
             template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...) volatile, typename WRAP,
                 typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::shared_ptr<CLASS>>::value, int>::type = 0>
             void push_back(WRAP&& object) { 
                 using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::shared_ptr<CLASS>>;
-                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<std::shared_ptr<CLASS>>(object))));
+                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
             }
             template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...) const volatile, typename WRAP,
                 typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::shared_ptr<CLASS>>::value, int>::type = 0>
             void push_back(WRAP&& object) { 
                 using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::shared_ptr<CLASS>>;
-                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<std::shared_ptr<CLASS>>(object))));
+                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
             }
             template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...) &, typename WRAP,
                 typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::shared_ptr<CLASS>>::value, int>::type = 0>
             void push_back(WRAP&& object) { 
                 using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::shared_ptr<CLASS>>;
-                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<std::shared_ptr<CLASS>>(object))));
+                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
             }
             template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...) const &, typename WRAP,
                 typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::shared_ptr<CLASS>>::value, int>::type = 0>
             void push_back(WRAP&& object) { 
                 using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::shared_ptr<CLASS>>;
-                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<std::shared_ptr<CLASS>>(object))));
+                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
             }
             template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...) volatile &, typename WRAP,
                 typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::shared_ptr<CLASS>>::value, int>::type = 0>
             void push_back(WRAP&& object) { 
                 using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::shared_ptr<CLASS>>;
-                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<std::shared_ptr<CLASS>>(object))));
+                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
             }
             template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...) const volatile &, typename WRAP,
                 typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::shared_ptr<CLASS>>::value, int>::type = 0>
             void push_back(WRAP&& object) { 
                 using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::shared_ptr<CLASS>>;
-                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<std::shared_ptr<CLASS>>(object))));
+                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
             }
             template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...) &&, typename WRAP,
                 typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::shared_ptr<CLASS>>::value, int>::type = 0>
             void push_back(WRAP&& object) { 
                 using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::shared_ptr<CLASS>>;
-                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<std::shared_ptr<CLASS>>(object))));
+                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
             }
             template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...) const &&, typename WRAP,
                 typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::shared_ptr<CLASS>>::value, int>::type = 0>
             void push_back(WRAP&& object) { 
                 using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::shared_ptr<CLASS>>;
-                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<std::shared_ptr<CLASS>>(object))));
+                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
             }
             template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...) volatile &&, typename WRAP,
                 typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::shared_ptr<CLASS>>::value, int>::type = 0>
             void push_back(WRAP&& object) { 
                 using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::shared_ptr<CLASS>>;
-                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<std::shared_ptr<CLASS>>(object))));
+                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
             }
             template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...) const volatile &&, typename WRAP,
                 typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::shared_ptr<CLASS>>::value, int>::type = 0>
             void push_back(WRAP&& object) { 
                 using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::shared_ptr<CLASS>>;
-                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<std::shared_ptr<CLASS>>(object))));
+                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
             }
             
             template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...), typename WRAP,
                 typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::weak_ptr<CLASS>>::value, int>::type = 0>
             void push_back(WRAP&& object) {
                 using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::weak_ptr<CLASS>>;
-                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<std::weak_ptr<CLASS>>(object))));
+                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
             }
             template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...) const, typename WRAP,
                 typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::weak_ptr<CLASS>>::value, int>::type = 0>
             void push_back(WRAP&& object) {
                 using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::weak_ptr<CLASS>>;
-                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<std::weak_ptr<CLASS>>(object))));
+                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
             }
             template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...) volatile, typename WRAP,
                 typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::weak_ptr<CLASS>>::value, int>::type = 0>
             void push_back(WRAP&& object) {
                 using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::weak_ptr<CLASS>>;
-                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<std::weak_ptr<CLASS>>(object))));
+                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
             }
             template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...) const volatile, typename WRAP,
                 typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::weak_ptr<CLASS>>::value, int>::type = 0>
             void push_back(WRAP&& object) {
                 using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::weak_ptr<CLASS>>;
-                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<std::weak_ptr<CLASS>>(object))));
+                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
             }
             template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...) &, typename WRAP,
                 typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::weak_ptr<CLASS>>::value, int>::type = 0>
             void push_back(WRAP&& object) {
                 using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::weak_ptr<CLASS>>;
-                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<std::weak_ptr<CLASS>>(object))));
+                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
             }
             template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...) const &, typename WRAP,
                 typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::weak_ptr<CLASS>>::value, int>::type = 0>
             void push_back(WRAP&& object) {
                 using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::weak_ptr<CLASS>>;
-                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<std::weak_ptr<CLASS>>(object))));
+                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
             }
             template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...) volatile &, typename WRAP,
                 typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::weak_ptr<CLASS>>::value, int>::type = 0>
             void push_back(WRAP&& object) {
                 using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::weak_ptr<CLASS>>;
-                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<std::weak_ptr<CLASS>>(object))));
+                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
             }
             template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...) const volatile &, typename WRAP,
                 typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::weak_ptr<CLASS>>::value, int>::type = 0>
             void push_back(WRAP&& object) {
                 using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::weak_ptr<CLASS>>;
-                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<std::weak_ptr<CLASS>>(object))));
+                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
             }
             template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...) &&, typename WRAP,
                 typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::weak_ptr<CLASS>>::value, int>::type = 0>
             void push_back(WRAP&& object) {
                 using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::weak_ptr<CLASS>>;
-                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<std::weak_ptr<CLASS>>(object))));
+                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
             }
             template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...) const &&, typename WRAP,
                 typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::weak_ptr<CLASS>>::value, int>::type = 0>
             void push_back(WRAP&& object) {
                 using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::weak_ptr<CLASS>>;
-                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<std::weak_ptr<CLASS>>(object))));
+                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
             }
             template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...) volatile &&, typename WRAP,
                 typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::weak_ptr<CLASS>>::value, int>::type = 0>
             void push_back(WRAP&& object) {
                 using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::weak_ptr<CLASS>>;
-                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<std::weak_ptr<CLASS>>(object))));
+                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
             }
             template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...) const volatile &&, typename WRAP,
                 typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, std::weak_ptr<CLASS>>::value, int>::type = 0>
             void push_back(WRAP&& object) {
                 using cb_t = callback::callback_wrap<CLASS, RETURN(ARGS...), decltype(FUNC), FUNC, std::weak_ptr<CLASS>>;
-                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<std::weak_ptr<CLASS>>(object))));
+                callbacks.push_back(std::unique_ptr<cb_t>(new cb_t(std::forward<WRAP>(object))));
             }
 
             // GLOBAL ------------------------------------------------------------------------------------
