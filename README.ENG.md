@@ -36,7 +36,7 @@
 ## Example Usage
 
 ```cpp
-#include "Action.hpp"
+#include "ActionRemake.hpp"
 #include <iostream>
 
 struct MyClass {
@@ -45,6 +45,11 @@ struct MyClass {
 
     void member_const(int x) const { std::cout << "Const Member: " << x << "\n"; }
     static void _static(int x) { std::cout << "Static: " << x << "\n"; }
+
+    void shared_callback(int x) { std::cout << "shared: " << x << "\n"; }
+    void weak_callback(int x) { std::cout << "weak: " << x << "\n"; }
+
+    void object_callback(int x) { std::cout << "object callback: " << x << "\n"; }
 };
 
 void global(int x) { std::cout << "Global: " << x << "\n"; }
@@ -54,6 +59,9 @@ int main() {
     const MyClass const_obj;
     action::action<void(int)> onEvent;
     action::action<int(int)> onEventReturn;
+
+    auto my_callback = 
+        action::object_callback<void(int)>::make_unique<MyClass, &MyClass::object_callback>(&obj);
 
     // Add member callback
     onEvent.push_back<MyClass, &MyClass::member>(&obj);
@@ -86,6 +94,11 @@ int main() {
     int ret = onEventReturn.invoke(10);
     std::cout << "Returned value: " << ret << "\n";
 
+    auto sp_obj = std::make_shared<MyClass>();
+    onEvent.push_back<MyClass, &MyClass::shared_callback>(sp_obj);        // shared_ptr
+    std::weak_ptr<MyClass> wp_obj = sp_obj;
+    onEvent.push_back<MyClass, &MyClass::weak_callback>(wp_obj);        // weak_ptr
+
     // Remove callbacks by key
     onEvent.erase<MyClass, &MyClass::member>(&obj);
     onEvent.erase<42>();
@@ -93,6 +106,8 @@ int main() {
     std::cout << "\nInvoking after removing some callbacks:\n";
     onEvent.invoke(20);
 
+    my_callback->invoke(30);
+    
     return 0;
 }
 ```
