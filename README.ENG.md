@@ -44,33 +44,35 @@ struct MyClass {
     void member(int x) { std::cout << "Member: " << x << "\n"; }
     void member(unsigned long long _double) { std::cout << "Member: " << _double << "\n"; }
 
-    void member_const(int x) const { std::cout << "Const Member: " << x << "\n"; }
-    static void _static(int x) { std::cout << "Static: " << x << "\n"; }
+    void member_const(int x) const { std::cout << "Const member: " << x << "\n"; }
+    static void _static(int x) { std::cout << "Static function: " << x << "\n"; }
 
-    void shared_callback(int x) { std::cout << "shared: " << x << "\n"; }
-    void weak_callback(int x) { std::cout << "weak: " << x << "\n"; }
+    void shared_callback(int x) { std::cout << "shared_ptr: " << x << "\n"; }
+    void weak_callback(int x) { std::cout << "weak_ptr: " << x << "\n"; }
 
-    void object_callback(int x) { std::cout << "object callback: " << x << "\n"; }
+    void object_callback(int x) { std::cout << "Object callback: " << x << "\n"; }
 };
 
-void global(int x) { std::cout << "Global: " << x << "\n"; }
+// Global function
+void global(int x) { std::cout << "Global function: " << x << "\n"; }
 
 int main() {
     MyClass obj;
     const MyClass const_obj;
-    action::action<void(int)> onEvent;
-    action::action<int(int)> onEventReturn;
+    action::action<void(int)> onEvent;         // event with no return value
+    action::action<int(int)> onEventReturn;    // event with int return value
 
+    // Create callback directly from object
     auto my_callback = 
         action::object_callback<void(int)>::make_unique<MyClass, &MyClass::object_callback>(&obj);
 
-    // Add member callback
+    // Add callback from member function
     onEvent.push_back<MyClass, &MyClass::member>(&obj);
 
-    // Add const member callback
+    // Add callback from const member function
     onEvent.push_back<MyClass, &MyClass::member_const>(&const_obj);
 
-    // Add static/global callbacks
+    // Add callback from static/global function
     onEvent.push_back<&MyClass::_static>();
     onEvent.push_back<&global>();
 
@@ -95,10 +97,13 @@ int main() {
     int ret = onEventReturn.invoke(10);
     std::cout << "Returned value: " << ret << "\n";
 
+    // Add callback using shared_ptr
     auto sp_obj = std::make_shared<MyClass>();
-    onEvent.push_back<MyClass, &MyClass::shared_callback>(sp_obj);        // shared_ptr
+    onEvent.push_back<MyClass, &MyClass::shared_callback>(sp_obj);
+
+    // Add callback using weak_ptr
     std::weak_ptr<MyClass> wp_obj = sp_obj;
-    onEvent.push_back<MyClass, &MyClass::weak_callback>(wp_obj);        // weak_ptr
+    onEvent.push_back<MyClass, &MyClass::weak_callback>(wp_obj);
 
     // Remove callbacks by key
     onEvent.erase<MyClass, &MyClass::member>(&obj);
@@ -107,6 +112,7 @@ int main() {
     std::cout << "\nInvoking after removing some callbacks:\n";
     onEvent.invoke(20);
 
+    // Invoke callback directly from object
     my_callback->invoke(30);
     
     return 0;
