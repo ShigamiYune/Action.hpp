@@ -7,7 +7,7 @@ Cho phép bạn đăng ký các callback (member function, const member, global/
 
 ---
 
-## Yêu cầu : C++ 17
+## Yêu cầu : C++ 11
 
 ---
 
