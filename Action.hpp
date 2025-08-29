@@ -248,7 +248,7 @@ namespace action {
                 return std::make_unique<cb_t>(std::forward<WRAP>(object));
             }
             else {
-                static_assert("object error: you can be change to use lambda");
+                static_assert(false, "object error: you can be change to use lambda");
             }
             return nullptr;
         };
@@ -651,7 +651,7 @@ namespace action {
         }
 
         template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...) const && noexcept, typename WRAP>
-        void pusheraseerase_back(WRAP object) { 
+        void erase(WRAP object) { 
             erase_member<CLASS, FUNC>(std::forward<WRAP>(object));
         }
 
