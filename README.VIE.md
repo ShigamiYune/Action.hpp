@@ -30,6 +30,7 @@ Cho phép bạn đăng ký các callback (member function, const member, global/
 * `action::action<Signature>::erase<Class, &Class::func>(object)` — xóa callback từ member/const member function.
 * `action::action<Signature>::erase<&GlobalFunc>()` — xóa callback global/static function.
 * `action::action<Signature>::erase<KEY>()` — xóa callback từ key.
+* `action::object_callbaclk<Signature>::make_unique<...>()` — tạo 1 đối tượng callback
 * `invoke(args...)` — thực thi tất cả callback đã đăng ký.
 
 ---
