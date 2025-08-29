@@ -747,32 +747,6 @@ namespace action {
                 std::remove_all_extents<T>::type>::type>::type>::type;
         };
         template <typename T> using remove_all_t = typename get_type<T>::remove_all;
-        namespace check {
-            template<typename T>
-            struct is_noexcept_memfun : std::false_type {};
-            template<typename R, typename C, typename... Args>
-            struct is_noexcept_memfun<R(C::*)(Args...) noexcept> : std::true_type {};
-            template<typename R, typename C, typename... Args>
-            struct is_noexcept_memfun<R(C::*)(Args...) const noexcept> : std::true_type {};
-            template<typename R, typename C, typename... Args>
-            struct is_noexcept_memfun<R(C::*)(Args...) volatile noexcept> : std::true_type {};
-            template<typename R, typename C, typename... Args>
-            struct is_noexcept_memfun<R(C::*)(Args...) & noexcept> : std::true_type {};
-            template<typename R, typename C, typename... Args>
-            struct is_noexcept_memfun<R(C::*)(Args...) const & noexcept> : std::true_type {};
-            template<typename R, typename C, typename... Args>
-            struct is_noexcept_memfun<R(C::*)(Args...) volatile & noexcept> : std::true_type {};
-            template<typename R, typename C, typename... Args>
-            struct is_noexcept_memfun<R(C::*)(Args...) const volatile & noexcept> : std::true_type {};
-            template<typename R, typename C, typename... Args>
-            struct is_noexcept_memfun<R(C::*)(Args...) && noexcept> : std::true_type {};
-            template<typename R, typename C, typename... Args>
-            struct is_noexcept_memfun<R(C::*)(Args...) const && noexcept> : std::true_type {};
-            template<typename R, typename C, typename... Args>
-            struct is_noexcept_memfun<R(C::*)(Args...) volatile && noexcept> : std::true_type {};
-            template<typename R, typename C, typename... Args>
-            struct is_noexcept_memfun<R(C::*)(Args...) const volatile && noexcept> : std::true_type {};
-        }
         namespace key {
             enum type_key : std::uint8_t{
                 member = 167, 
