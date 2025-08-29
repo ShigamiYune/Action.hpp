@@ -97,6 +97,7 @@ namespace action {
                 virtual ~object_callback() = default;
                 virtual RETURN invoke(ARGS...) = 0;
                 virtual bool compare(std::uint8_t, const void*) = 0;
+                RETURN operator()(ARGS... args) { return invoke(args...); }
             };
         }
 
@@ -214,10 +215,10 @@ namespace action {
             
             bool compare(std::uint8_t type, const void* key_ptr) override {
                 if(type != key::member) return false;
-
+                std::uintptr_t ptr = 0;
+                
                 auto sp = _wrap.lock();
-                if (!sp) return false;
-                std::uintptr_t ptr = reinterpret_cast<std::uintptr_t>(sp.get());
+                if (sp) ptr = reinterpret_cast<std::uintptr_t>(sp.get());
 
                 const key::key_member_base* key = reinterpret_cast<const key::key_member_base*>(key_ptr);
                 return 
@@ -400,7 +401,7 @@ namespace action {
                 callbacks.push_back(std::make_unique<cb_t>(object));
             }
             else {
-                static_assert("object error: you can be change to use lambda");
+                static_assert(false, "object error: you can be change to use lambda");
             }
         }
 
@@ -418,11 +419,10 @@ namespace action {
             }
             else if constexpr (std::is_same_v<std::weak_ptr<CLASS>, callback::remove_all_t<WRAP>>) {
                 auto sp = object.lock();
-                if (!sp) return;
-                member_key.ptr = reinterpret_cast<std::uintptr_t>(sp.get());
+                if (sp) member_key.ptr = reinterpret_cast<std::uintptr_t>(sp.get());
             }
             else {
-                static_assert("erase_member: unsupported object type");
+                static_assert(false, "erase_member: unsupported object type");
             }
 
             // Duyệt và xóa callback
