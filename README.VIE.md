@@ -38,7 +38,7 @@ Cho phép bạn đăng ký các callback (member function, const member, global/
 ## Ví dụ sử dụng
 
 ```cpp
-#include "ActionRemake.hpp"
+#include "Action.hpp"
 #include <iostream>
 
 struct MyClass {
@@ -80,14 +80,14 @@ int main() {
     // Thêm lambda có capture
     int val = 5;
     auto lambda = [val](int x){ std::cout << "Lambda capture: " << x + val << "\n"; };
-    onEvent.push_back<42>(lambda);
+    onEvent.push_back<int, 42>(lambda);
 
     // Thêm callback trả về giá trị
     auto global_return = [](int x){ 
         std::cout << "Return: " << x << "\n"; 
         return x*2; 
     };
-    onEventReturn.push_back<24>(global_return);
+    onEventReturn.push_back<int, 24>(global_return);
 
     // Gọi tất cả callback
     std::cout << "Gọi tất cả callback:\n";
@@ -108,7 +108,7 @@ int main() {
 
     // Xóa các callback theo key
     onEvent.erase<MyClass, &MyClass::member>(&obj);
-    onEvent.erase<42>();
+    onEvent.erase<int, 42>();
 
     std::cout << "\nGọi sau khi xóa một số callback:\n";
     onEvent.invoke(20);
