@@ -244,6 +244,7 @@ namespace action {
         static object_type make_unique_member(WRAP&& object) {
             if constexpr (std::is_same_v<callback::remove_all_t<WRAP>, CLASS>) {
                 using cb_t = callback::callback_member<WRAP, RETURN(ARGS...), FUNC>;
+
                 return std::make_unique<cb_t>(std::forward<WRAP>(object));
             }
             else if constexpr (std::is_same_v<std::weak_ptr<CLASS>, callback::remove_all_t<WRAP>> 
@@ -382,7 +383,12 @@ namespace action {
         template<auto key, typename FUNC_T>
         static object_type make_unique(FUNC_T&& func) {
             using cb_t = callback::callback_lambda<std::decay_t<FUNC_T>, RETURN(ARGS...), key>;
-            return std::move(std::make_unique<cb_t>(std::forward(func)));
+            return std::move(std::make_unique<cb_t>(std::forward<FUNC_T>(func)));
+        }
+        template<typename KEY_T, KEY_T key, typename FUNC_T>
+        static object_type make_unique(FUNC_T&& func) {
+            using cb_t = callback::callback_lambda<std::decay_t<FUNC_T>, RETURN(ARGS...), key>;
+            return std::move(std::make_unique<cb_t>(std::forward<FUNC_T>(func)));
         }
     };
 
@@ -1850,8 +1856,9 @@ namespace action {
     template<typename SIGNATURE> class object_callback;
     template<typename RETURN, typename... ARGS> 
     class object_callback<RETURN(ARGS...)> {
-        using object_type = std::unique_ptr<callback::base::object_callback<RETURN(ARGS...)>>;
     public:
+        using object_type = std::unique_ptr<callback::base::object_callback<RETURN(ARGS...)>>;
+
         template<typename CLASS, RETURN(CLASS::*FUNC)(ARGS...), typename WRAP,
                 typename std::enable_if<std::is_same<callback::remove_all_t<WRAP>, CLASS>::value, int>::type = 0>
         static object_type make_unique(WRAP&& object) { 
